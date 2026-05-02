@@ -75,8 +75,8 @@
     position: sticky; top: 0; z-index: 100;
   }
   .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-  .nav-logo { height: 26px; width: auto; display: block; }
-  [data-theme="light"] .nav-logo { filter: invert(1) brightness(0.1); }
+  .nav-logo { height: 28px; width: auto; display: block; border-radius: 6px; }
+  [data-theme="light"] .nav-logo { filter: invert(0); opacity:.9; }
   .nav-badge {
     font-family: var(--font-mono); font-size: 10px; font-weight: 700;
     letter-spacing: .12em; text-transform: uppercase;
@@ -358,6 +358,36 @@
     transform: translateY(60px); opacity: 0; transition: all .25s cubic-bezier(.16,1,.3,1);
   }
   .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* ── DOCS INSTALL TABS ── */
+  .install-tabs { display:flex; gap:4px; margin:20px 0 0; }
+  .install-tab {
+    font-family:var(--font-body); font-size:13px; font-weight:600;
+    padding:8px 18px; border-radius:8px 8px 0 0;
+    border:1px solid var(--border); border-bottom:none;
+    background:var(--surface2); color:var(--text2); cursor:pointer; transition:all .15s;
+  }
+  .install-tab.active { background:var(--surface3); color:var(--text); border-color:var(--border2); }
+  .install-panel { display:none; border:1px solid var(--border2); border-radius:0 12px 12px 12px; padding:20px; background:var(--surface); }
+  .install-panel.active { display:block; }
+  .step-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  .step-card { background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:8px; }
+  .step-num {
+    width:28px; height:28px; border-radius:50%;
+    background:rgba(200,255,0,.12); border:1px solid rgba(200,255,0,.3);
+    color:var(--lime); font-family:var(--font-mono); font-size:12px; font-weight:700;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .step-title { font-size:14px; font-weight:700; letter-spacing:-.01em; }
+  .step-card p { font-size:12px; color:var(--text2); line-height:1.55; }
+  .step-cmd {
+    font-family:var(--font-mono); font-size:11px; color:var(--green-term);
+    background:var(--green-bg); border:1px solid rgba(0,255,136,.15);
+    border-radius:6px; padding:7px 10px; margin-top:auto; word-break:break-all;
+  }
+  [data-theme="light"] .step-cmd { background:#f0faf4; border-color:rgba(26,122,64,.2); }
+  @media (max-width:700px) { .step-grid { grid-template-columns:1fr; } }
+
   @media (max-width: 840px) {
     .skills-strip { grid-template-columns: 1fr; }
     .cards-grid { grid-template-columns: repeat(2,1fr); }
@@ -377,8 +407,7 @@
 
 <nav>
   <a class="nav-brand" href="#" onclick="showPage('dashboard');return false;">
-    <img class="nav-logo" src="https://cdn.pika.art/pika-logo-white.png" alt="Pika"
-      onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<svg class=\'nav-logo\' viewBox=\'0 0 72 24\' fill=\'none\'><path d=\'M8 2L3 12h4.5l-2 10L18 10h-5.5L17 2z\' fill=\'white\'></path><text x=\'21\' y=\'17\' font-family=\'system-ui\' font-size=\'14\' font-weight=\'800\' fill=\'white\' letter-spacing=\'1\'>PIKA</text></svg>')">
+    <img class="nav-logo" src="data:image/jpeg;base64,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d0QcCAhuiK66Jvmx+yu6IOmib5sfspom+bH7K7og6aJvmx+yu6IgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIrFakV7nM072qXdpqRXuczTvapd2grqisVqRXuczTvapd2mpFe5zNO9ql3aCuqKxWpFe5zNO9ql3aakV7nM072qXdoK6orFakV7nM072qXdpqRXuczTvapd2grqisVqRXuczTvapd2mpFe5zNO9ql3aCuqKxWpFe5zNO9ql3aakV7nM072qXdoK6orFakV7nM072qXdpqRXuczTvapd2grqisVqRXuczTvapd2mpFe5zNO9ql3aCuqKxWpFe5zNO9ql3aakV7nM072qXdoK6orFakV7nM072qXdpqRXuczTvapd2grqisVqRXuczTvapd2mpFe5zNO9ql3aCuqKxWpFe5zNO9ql3aakV7nM072qXdoK6orFakV7nM072qXdpqRXuczTvapd2grqisVqRXuczTvapd2mpFe5zNO9ql3aCuqKxWpFe5zNO9ql3aakV7nM072qXdoK6orFakV7nM072qXdpqRXuczTvapd2grqisVqRXuczTvapd2iDZgiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiIP/2Q==" alt="Pika">
     <span class="nav-badge">MCP</span>
   </a>
   <div class="nav-center">
@@ -414,38 +443,133 @@
 
 <div class="page" id="page-docs">
   <div class="docs-wrap">
-    <div class="docs-section">
-      <h2>🚀 Quick Setup</h2>
-      <h3>1. Install Pika MCP</h3>
-      <div class="code-block">claude mcp install pika-labs/pika-plugins</div>
-      <h3>2. Or add to .mcp.json manually</h3>
-      <div class="code-block">{
-  "mcpServers": {
-    "pika": {
-      "command": "npx",
-      "args": ["-y", "@pika-labs/mcp"],
-      "env": { "PIKA_DEV_KEY": "your_key_here" }
-    }
-  }
-}</div>
-      <h3>3. Verify in Claude Code</h3>
-      <div class="code-block">/mcp
-# pika should appear as connected</div>
-    </div>
-    <div class="docs-section">
-      <h2>⚡ Skills Setup</h2>
-      <p>Skills are autonomous multi-step workflows. Install them by adding the skill folder to your project's .claude/skills/ directory.</p>
-      <div class="code-block">git clone https://github.com/Pika-Labs/Pika-Plugins.git
-cp -r Pika-Plugins/skills/* .claude/skills/
 
-# /pika:podcast   — two-host dialogue video from topic or URL
-# /pika:explainer — 65-80 sec explainer from a URL
-# /pika:ugc-ads   — 15 sec vertical UGC ad from a product URL</div>
+    <!-- Install tabs -->
+    <div class="docs-section">
+      <h2>🚀 Connect to the MCP</h2>
+      <p>Get access to your Pika Agent's identity, plus all creative models — Seedance 2.0, GPT Images 2.0, and more.</p>
+      <div class="install-tabs">
+        <button class="install-tab active" onclick="switchTab(this,'claude')">✦ Claude app</button>
+        <button class="install-tab" onclick="switchTab(this,'terminal')">⌨ Terminal</button>
+      </div>
+
+      <!-- Claude app steps -->
+      <div class="install-panel active" id="tab-claude">
+        <div class="step-grid">
+          <div class="step-card">
+            <div class="step-num">1</div>
+            <div class="step-title">Open Claude Settings</div>
+            <p>Launch the Claude app or open claude.ai and go to:</p>
+            <div class="step-cmd">Settings → Connectors</div>
+          </div>
+          <div class="step-card">
+            <div class="step-num">2</div>
+            <div class="step-title">Add a Custom Connector</div>
+            <p>Name it <strong>Pika</strong> and paste this URL:</p>
+            <div class="step-cmd">https://mcp.pika.me/api/mcp</div>
+          </div>
+          <div class="step-card">
+            <div class="step-num">3</div>
+            <div class="step-title">Connect and Sign In</div>
+            <p>Select Add → Connect and create your Pika account. Then ask Claude to adopt their new identity.</p>
+            <div class="step-cmd">Set up your Pika identity through the MCP</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Terminal steps -->
+      <div class="install-panel" id="tab-terminal">
+        <div class="step-grid">
+          <div class="step-card">
+            <div class="step-num">1</div>
+            <div class="step-title">Add the MCP</div>
+            <p>Run this in your terminal once:</p>
+            <div class="code-block">claude mcp add pika --transport http https://mcp.pika.me/api/mcp</div>
+          </div>
+          <div class="step-card">
+            <div class="step-num">2</div>
+            <div class="step-title">Sign In</div>
+            <p>Inside Claude Code, run /mcp and follow the OAuth flow to log in to Pika:</p>
+            <div class="step-cmd">/mcp</div>
+          </div>
+          <div class="step-card">
+            <div class="step-num">3</div>
+            <div class="step-title">Try a Prompt</div>
+            <p>Once signed in, ask Claude to set up your Pika identity:</p>
+            <div class="step-cmd">Set up your Pika identity through the MCP</div>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <!-- Skills Plugin -->
+    <div class="docs-section">
+      <h2>⚡ Install the Pika Skills Plugin</h2>
+      <p>Give your Pikafied Claude creative superpowers — starting with Podcasts, Explainer videos, and UGC ads.</p>
+      <div class="install-tabs">
+        <button class="install-tab active" onclick="switchTab2(this,'claude2')">✦ Claude app</button>
+        <button class="install-tab" onclick="switchTab2(this,'terminal2')">⌨ Terminal</button>
+      </div>
+
+      <!-- Claude app skill steps -->
+      <div class="install-panel active" id="tab-claude2">
+        <div class="step-grid">
+          <div class="step-card">
+            <div class="step-num">1</div>
+            <div class="step-title">Add the Plugin from Marketplace</div>
+            <p>In Claude desktop or Cowork, open Customize → Personal plugins (+) → Create plugin → Add marketplace, then paste this handle and click Sync:</p>
+            <div class="step-cmd">Pika-Labs/Pika-Plugins</div>
+          </div>
+          <div class="step-card">
+            <div class="step-num">2</div>
+            <div class="step-title">Toggle the Plugin On</div>
+            <p>Once added, in the Customize page open the Personal plugins tab and toggle the Pika plugin on.</p>
+            <div class="step-cmd" style="display:flex;align-items:center;gap:10px;">Pika <span style="font-size:22px;">🟢</span></div>
+          </div>
+          <div class="step-card">
+            <div class="step-num">3</div>
+            <div class="step-title">Run a Pika Skill</div>
+            <p>Invoke any skill with a slash command:</p>
+            <div class="step-cmd">/pika:podcast</div>
+            <div class="step-cmd">/pika:explainer</div>
+            <div class="step-cmd">/pika:ugc-ads</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Terminal skill steps -->
+      <div class="install-panel" id="tab-terminal2">
+        <div class="step-grid">
+          <div class="step-card">
+            <div class="step-num">1</div>
+            <div class="step-title">Add the Marketplace</div>
+            <p>Inside Claude Code, run:</p>
+            <div class="code-block">/plugin marketplace add Pika-Labs/Pika-Plugins</div>
+          </div>
+          <div class="step-card">
+            <div class="step-num">2</div>
+            <div class="step-title">Install the Pika Plugin</div>
+            <p>Then install the plugin from the marketplace:</p>
+            <div class="code-block">/plugin install pika@pika-plugins</div>
+          </div>
+          <div class="step-card">
+            <div class="step-num">3</div>
+            <div class="step-title">Run a Pika Skill</div>
+            <p>Invoke any skill with a slash command:</p>
+            <div class="step-cmd">/pika:podcast</div>
+            <div class="step-cmd">/pika:explainer</div>
+            <div class="step-cmd">/pika:ugc-ads</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Image attach note -->
     <div class="docs-section">
       <h2>📎 Attaching Images</h2>
       <p>Skills that accept image inputs work through Claude Code's standard file attachment. Drag images into the Claude Code terminal or IDE, or provide a publicly hosted HTTPS URL as a parameter.</p>
     </div>
+
     <div class="docs-section">
       <h2>🗂️ Full Tool Reference</h2>
       <table class="ref-table">
@@ -453,6 +577,7 @@ cp -r Pika-Plugins/skills/* .claude/skills/
         <tbody id="ref-tbody"></tbody>
       </table>
     </div>
+
   </div>
 </div>
 
@@ -953,6 +1078,19 @@ document.addEventListener('keydown',function(e){
   if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();openSearch();}
   if(e.key==='Escape'){closeRunModal();closeSearch();}
 });
+
+function switchTab(btn, panelId) {
+  btn.closest('.docs-section').querySelectorAll('.install-tab').forEach(function(t){t.classList.remove('active');});
+  btn.classList.add('active');
+  btn.closest('.docs-section').querySelectorAll('.install-panel').forEach(function(p){p.classList.remove('active');});
+  document.getElementById('tab-'+panelId).classList.add('active');
+}
+function switchTab2(btn, panelId) {
+  btn.closest('.docs-section').querySelectorAll('.install-tab').forEach(function(t){t.classList.remove('active');});
+  btn.classList.add('active');
+  btn.closest('.docs-section').querySelectorAll('.install-panel').forEach(function(p){p.classList.remove('active');});
+  document.getElementById('tab-'+panelId).classList.add('active');
+}
 
 renderGrid();
 </script>
