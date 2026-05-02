@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pika MCP Dashboard</title>
+<style>
+  :root[data-theme="dark"] {
+    --bg: #0d0d0f;
+    --surface: #18181b;
+    --surface2: #27272a;
+    --border: #3f3f46;
+    --text: #fafafa;
+    --text2: #a1a1aa;
+    --accent: #7c3aed;
+    --accent2: #a78bfa;
+    --green: #10b981;
+    --orange: #f59e0b;
+    --red: #ef4444;
+    --blue: #3b82f6;
+    --pink: #ec4899;
+    --cyan: #06b6d4;
+  }
+  :root[data-theme="light"] {
+    --bg: #f4f4f5;
+    --surface: #ffffff;
+    --surface2: #f4f4f5;
+    --border: #d4d4d8;
+    --text: #18181b;
+    --text2: #71717a;
+    --accent: #7c3aed;
+    --accent2: #6d28d9;
+    --green: #059669;
+    --orange: #d97706;
+    --red: #dc2626;
+    --blue: #2563eb;
+    --pink: #db2777;
+    --cyan: #0891b2;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  
+  /* NAV */
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 0 24px; height: 60px; background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+  .nav-brand { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; }
+  .nav-brand span { color: var(--accent2); }
+  .nav-actions { display: flex; align-items: center; gap: 12px; }
+  .search-trigger { display: flex; align-items: center; gap: 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 6px 14px; cursor: pointer; color: var(--text2); font-size: 13px; transition: all .2s; }
+  .search-trigger:hover { border-color: var(--accent); color: var(--text); }
+  .kbd { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; font-size: 11px; }
+  .theme-toggle { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 16px; transition: all .2s; }
+  .theme-toggle:hover { border-color: var(--accent); }
+  .nav-tabs { display: flex; gap: 4px; }
+  .nav-tab { padding: 6px 14px; border-radius: 6px; border: none; background: none; color: var(--text2); font-size: 13px; cursor: pointer; transition: all .2s; }
+  .nav-tab.active, .nav-tab:hover { background: var(--surface2); color: var(--text); }
+  .nav-tab.active { color: var(--accent2); }
+
+  /* HERO */
+  .hero { padding: 40px 24px 0; max-width: 1200px; margin: 0 auto; }
+  .hero h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+  .hero h1 span { background: linear-gradient(135deg, var(--accent2), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero p { color: var(--text2); font-size: 15px; margin-bottom: 24px; }
+  .stats { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 0; }
+  .stat-chip { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 14px; font-size: 12px; color: var(--text2); }
+  .stat-chip strong { color: var(--text); }
+
+  /* FILTER PILLS */
+  .filter-bar { padding: 20px 24px 0; max-width: 1200px; margin: 0 auto; display: flex; gap: 8px; flex-wrap: wrap; }
+  .pill { padding: 6px 16px; border-radius: 20px; border: 1px solid var(--border); background: none; color: var(--text2); font-size: 13px; cursor: pointer; transition: all .2s; white-space: nowrap; }
+  .pill:hover { border-color: var(--accent); color: var(--text); }
+  .pill.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  /* MAIN GRID */
+  .main { padding: 24px; max-width: 1200px; margin: 0 auto; }
+  .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; margin-top: 8px; }
+  .section-icon { font-size: 20px; }
+  .section-title { font-size: 17px; font-weight: 600; }
+  .section-count { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 2px 10px; font-size: 12px; color: var(--text2); }
+  .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-bottom: 32px; }
+  
+  /* CARD */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; cursor: pointer; transition: all .2s; position: relative; overflow: hidden; }
+  .card::before { content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity .2s; background: linear-gradient(135deg, var(--accent) 0%, transparent 60%); }
+  .card:hover { border-color: var(--accent); transform: translateY(-1px); box-shadow: 0 4px 20px rgba(124,58,237,.15); }
+  .card:hover::before { opacity: .04; }
+  .card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; gap: 8px; }
+  .card-title { font-size: 14px; font-weight: 600; line-height: 1.3; }
+  .card-badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; white-space: nowrap; flex-shrink: 0; }
+  .badge-tool { background: rgba(59,130,246,.15); color: var(--blue); border: 1px solid rgba(59,130,246,.3); }
+  .badge-skill { background: rgba(236,72,153,.15); color: var(--pink); border: 1px solid rgba(236,72,153,.3); }
+  .card-desc { font-size: 12px; color: var(--text2); line-height: 1.5; margin-bottom: 12px; }
+  .card-footer { display: flex; align-items: center; justify-content: space-between; }
+  .card-cmd { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; color: var(--accent2); background: var(--surface2); padding: 2px 8px; border-radius: 4px; }
+  .run-btn { font-size: 11px; padding: 4px 10px; background: var(--accent); border: none; border-radius: 6px; color: #fff; cursor: pointer; transition: all .2s; }
+  .run-btn:hover { background: var(--accent2); }
+
+  /* MODAL */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.7); backdrop-filter: blur(4px); z-index: 200; display: none; align-items: center; justify-content: center; padding: 24px; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; width: 100%; max-width: 580px; max-height: 85vh; overflow-y: auto; }
+  .modal-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .modal-title { font-size: 17px; font-weight: 700; }
+  .modal-subtitle { font-size: 13px; color: var(--text2); margin-top: 4px; }
+  .modal-close { background: none; border: none; color: var(--text2); font-size: 20px; cursor: pointer; line-height: 1; padding: 2px 6px; border-radius: 6px; }
+  .modal-close:hover { background: var(--surface2); color: var(--text); }
+  .modal-body { padding: 20px 24px; }
+  .form-group { margin-bottom: 16px; }
+  .form-label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+  .form-label span { color: var(--red); }
+  .form-input, .form-select, .form-textarea { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; color: var(--text); font-size: 13px; transition: border-color .2s; }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--accent); }
+  .form-textarea { min-height: 80px; resize: vertical; font-family: inherit; }
+  .form-hint { font-size: 11px; color: var(--text2); margin-top: 4px; }
+  .output-box { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; color: var(--accent2); white-space: pre-wrap; word-break: break-all; margin-top: 16px; position: relative; }
+  .copy-btn { position: absolute; top: 8px; right: 8px; background: var(--accent); border: none; border-radius: 6px; color: #fff; font-size: 11px; padding: 4px 10px; cursor: pointer; }
+  .copy-btn:hover { background: var(--accent2); }
+  .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+  .btn { padding: 9px 18px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all .2s; border: none; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent2); }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--accent); }
+
+  /* SEARCH MODAL */
+  .search-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.8); backdrop-filter: blur(6px); z-index: 300; display: none; align-items: flex-start; justify-content: center; padding: 80px 24px; }
+  .search-overlay.open { display: flex; }
+  .search-box { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; width: 100%; max-width: 560px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,.5); }
+  .search-input-wrap { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--border); }
+  .search-icon { font-size: 16px; color: var(--text2); }
+  .search-input { flex: 1; background: none; border: none; color: var(--text); font-size: 15px; outline: none; }
+  .search-input::placeholder { color: var(--text2); }
+  .search-results { max-height: 400px; overflow-y: auto; padding: 8px; }
+  .search-result { padding: 10px 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: background .15s; }
+  .search-result:hover, .search-result.highlighted { background: var(--surface2); }
+  .search-result-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+  .search-result-info { flex: 1; min-width: 0; }
+  .search-result-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .search-result-cat { font-size: 11px; color: var(--text2); }
+  .search-empty { padding: 32px; text-align: center; color: var(--text2); font-size: 13px; }
+
+  /* DOCS PAGE */
+  .docs-page { padding: 32px 24px; max-width: 900px; margin: 0 auto; display: none; }
+  .docs-page.active { display: block; }
+  .docs-section { margin-bottom: 36px; }
+  .docs-section h2 { font-size: 20px; font-weight: 700; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  .docs-section h3 { font-size: 15px; font-weight: 600; margin: 16px 0 8px; }
+  .docs-section p { font-size: 14px; color: var(--text2); line-height: 1.7; margin-bottom: 10px; }
+  .code-block { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; overflow-x: auto; margin: 10px 0; position: relative; }
+  .code-block code { color: var(--accent2); white-space: pre; }
+  .ref-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 8px; }
+  .ref-table th { text-align: left; padding: 10px 12px; background: var(--surface2); border-bottom: 2px solid var(--border); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--text2); }
+  .ref-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .ref-table tr:last-child td { border-bottom: none; }
+  .ref-table td:first-child { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; color: var(--accent2); white-space: nowrap; }
+  .ref-table td:nth-child(2) { color: var(--text2); font-size: 12px; }
+  .ref-table tr:hover td { background: var(--surface2); }
+
+  /* DASHBOARD PAGE */
+  .dashboard-page { display: block; }
+  .dashboard-page.hidden { display: none; }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--green); color: #fff; padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 500; z-index: 500; transform: translateY(60px); opacity: 0; transition: all .3s; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* SKILL PARAMS */
+  .param-section { margin-top: 8px; }
+  .param-title { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--text2); margin-bottom: 8px; font-weight: 600; }
+  .param-tag { display: inline-flex; align-items: center; gap: 4px; background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-size: 11px; margin: 2px; font-family: monospace; }
+  .param-req { border-color: rgba(239,68,68,.4); color: var(--red); }
+  .param-opt { color: var(--text2); }
+
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 24px; }
+    .cards-grid { grid-template-columns: 1fr; }
+    nav { padding: 0 14px; }
+    .main { padding: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">
+    <span>⚡</span> Pika <span>MCP</span>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('dashboard')">Dashboard</button>
+    <button class="nav-tab" onclick="showPage('docs')">Docs & Setup</button>
+  </div>
+  <div class="nav-actions">
+    <button class="search-trigger" onclick="openSearch()">
+      🔍 Search tools… <span class="kbd">⌘K</span>
+    </button>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+  </div>
+</nav>
+
+<!-- DASHBOARD PAGE -->
+<div class="dashboard-page" id="page-dashboard">
+  <div class="hero">
+    <h1>Pika <span>MCP Tools</span> Dashboard</h1>
+    <p>Browse, search, and run all 42 Pika MCP tools and skills — click any card to generate the exact command.</p>
+    <div class="stats">
+      <div class="stat-chip"><strong>42</strong> Tools</div>
+      <div class="stat-chip"><strong>3</strong> Skills</div>
+      <div class="stat-chip"><strong>6</strong> Categories</div>
+      <div class="stat-chip">Live from <strong>Pika-Labs</strong></div>
+    </div>
+  </div>
+
+  <div class="filter-bar" id="filter-bar">
+    <button class="pill active" onclick="filterCat('all', this)">All</button>
+    <button class="pill" onclick="filterCat('generate-video', this)">🎬 Generate Video</button>
+    <button class="pill" onclick="filterCat('image-music', this)">🎨 Image & Music</button>
+    <button class="pill" onclick="filterCat('edit-effects', this)">✂️ Edit & Effects</button>
+    <button class="pill" onclick="filterCat('voice-audio', this)">🎙️ Voice & Audio</button>
+    <button class="pill" onclick="filterCat('identity', this)">👤 Identity</button>
+    <button class="pill" onclick="filterCat('utilities', this)">🔧 Utilities</button>
+    <button class="pill" onclick="filterCat('skills', this)">⚡ Skills</button>
+  </div>
+
+  <div class="main" id="tool-grid"></div>
+</div>
+
+<!-- DOCS PAGE -->
+<div class="docs-page" id="page-docs">
+  <div class="docs-section">
+    <h2>🚀 Quick Setup</h2>
+    <h3>1. Install the Pika MCP plugin</h3>
+    <div class="code-block"><code>claude mcp install pika-labs/pika-plugins</code></div>
+    <h3>2. Or configure .mcp.json manually</h3>
+    <div class="code-block"><code>{
+  "mcpServers": {
+    "pika": {
+      "command": "npx",
+      "args": ["-y", "@pika-labs/mcp"],
+      "env": {
+        "PIKA_DEV_KEY": "your_key_here"
+      }
+    }
+  }
+}</code></div>
+    <h3>3. Verify connection in Claude Code</h3>
+    <div class="code-block"><code>/mcp
+# You should see pika listed as connected</code></div>
+  </div>
+
+  <div class="docs-section">
+    <h2>📚 Skills Setup</h2>
+    <p>Skills are autonomous workflows that Claude follows. Install them by adding the skill folder to your <code>.claude/skills/</code> directory.</p>
+    <div class="code-block"><code># In your project root:
+git clone https://github.com/tatinc23/Pika-Skills-TAT.git
+cp -r Pika-Skills-TAT/skills/* .claude/skills/
+
+# Available skills:
+# /pika:podcast     — AI podcast generation
+# /pika:explainer   — Explainer video creation
+# /pika:ugc-ads     — UGC ad generation</code></div>
+  </div>
+
+  <div class="docs-section">
+    <h2>🗂️ Full Tool Reference</h2>
+    <table class="ref-table" id="ref-table">
+      <thead><tr><th>Command</th><th>Description</th><th>Category</th></tr></thead>
+      <tbody id="ref-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- QUICK RUN MODAL -->
+<div class="modal-overlay" id="run-modal" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modal-title">Tool Name</div>
+        <div class="modal-subtitle" id="modal-subtitle">Description</div>
+      </div>
+      <button class="modal-close" onclick="closeRunModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="modal-params"></div>
+      <div class="output-box" id="modal-output" style="display:none">
+        <button class="copy-btn" onclick="copyOutput()">Copy</button>
+        <span id="output-text"></span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeRunModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="generateCommand()">Generate Command</button>
+    </div>
+  </div>
+</div>
+
+<!-- SEARCH MODAL -->
+<div class="search-overlay" id="search-overlay" onclick="closeSearchOut(event)">
+  <div class="search-box">
+    <div class="search-input-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-input" id="search-input" placeholder="Search tools and skills…" oninput="doSearch(this.value)" onkeydown="searchKeyNav(event)">
+    </div>
+    <div class="search-results" id="search-results"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">Copied!</div>
+
+<script>
+// =====================
+// DATA — 42 Tools + 3 Skills
+// =====================
+const TOOLS = [
+  // GENERATE VIDEO
+  { id: 'create_video', name: 'Create Video', desc: 'Generate a new video from a text prompt. Choose aspect ratio, duration, and style.', cmd: 'create_video', cat: 'generate-video', icon: '🎬', params: [{name:'prompt',label:'Prompt',type:'textarea',req:true,hint:'Describe the video you want to generate'},{name:'aspect_ratio',label:'Aspect Ratio',type:'select',req:false,options:['16:9','9:16','1:1','4:3'],hint:'Default: 16:9'},{name:'duration',label:'Duration (sec)',type:'number',req:false,hint:'1-10 seconds'},{name:'style',label:'Style',type:'text',req:false,hint:'e.g. cinematic, anime, photorealistic'}] },
+  { id: 'create_video_from_image', name: 'Video from Image', desc: 'Animate a still image into a video clip using Pika AI.', cmd: 'create_video_from_image', cat: 'generate-video', icon: '🎬', params: [{name:'image_url',label:'Image URL',type:'text',req:true,hint:'URL of the source image'},{name:'prompt',label:'Motion Prompt',type:'textarea',req:false,hint:'Describe the motion to apply'},{name:'duration',label:'Duration (sec)',type:'number',req:false,hint:'1-10 seconds'}] },
+  { id: 'create_video_from_video', name: 'Video from Video', desc: 'Transform or extend an existing video clip with new style or motion.', cmd: 'create_video_from_video', cat: 'generate-video', icon: '🎬', params: [{name:'video_url',label:'Video URL',type:'text',req:true,hint:'URL of the source video'},{name:'prompt',label:'Transform Prompt',type:'textarea',req:false,hint:'Describe the transformation to apply'}] },
+  { id: 'create_video_from_audio', name: 'Video from Audio', desc: 'Generate a video synchronized to an audio track.', cmd: 'create_video_from_audio', cat: 'generate-video', icon: '🎬', params: [{name:'audio_url',label:'Audio URL',type:'text',req:true,hint:'URL of the audio file'},{name:'prompt',label:'Visual Prompt',type:'textarea',req:false,hint:'Describe the visuals to generate'}] },
+  { id: 'text_to_video', name: 'Text to Video (v2)', desc: 'Latest text-to-video model with enhanced quality and motion control.', cmd: 'text_to_video', cat: 'generate-video', icon: '🎬', params: [{name:'prompt',label:'Prompt',type:'textarea',req:true,hint:'Detailed description of the video'},{name:'negative_prompt',label:'Negative Prompt',type:'text',req:false,hint:'What to avoid in the video'},{name:'seed',label:'Seed',type:'number',req:false,hint:'Reproducibility seed'}] },
+  { id: 'image_to_video', name: 'Image to Video (v2)', desc: 'Convert a static image into a dynamic video with advanced motion AI.', cmd: 'image_to_video', cat: 'generate-video', icon: '🎬', params: [{name:'image_url',label:'Image URL',type:'text',req:true,hint:'Source image URL'},{name:'prompt',label:'Prompt',type:'textarea',req:false,hint:'Motion description'},{name:'camera_motion',label:'Camera Motion',type:'select',req:false,options:['static','zoom_in','zoom_out','pan_left','pan_right','tilt_up','tilt_down','rotate_cw','rotate_ccw']}] },
+  { id: 'video_extend', name: 'Extend Video', desc: 'Extend the duration of an existing video clip seamlessly.', cmd: 'video_extend', cat: 'generate-video', icon: '🎬', params: [{name:'video_url',label:'Video URL',type:'text',req:true,hint:'URL of the video to extend'},{name:'prompt',label:'Extension Prompt',type:'textarea',req:false,hint:'Describe what happens next'},{name:'duration',label:'Extra Duration (sec)',type:'number',req:false}] },
+  { id: 'video_upscale', name: 'Upscale Video', desc: 'Enhance video resolution and quality using AI upscaling.', cmd: 'video_upscale', cat: 'generate-video', icon: '🎬', params: [{name:'video_url',label:'Video URL',type:'text',req:true,hint:'URL of the video to upscale'},{name:'scale',label:'Scale Factor',type:'select',req:false,options:['2x','4x']}] },
+
+  // IMAGE & MUSIC
+  { id: 'generate_image', name: 'Generate Image', desc: 'Create high-quality images from text descriptions using Pika image AI.', cmd: 'generate_image', cat: 'image-music', icon: '🎨', params: [{name:'prompt',label:'Prompt',type:'textarea',req:true,hint:'Describe the image to generate'},{name:'style',label:'Style',type:'text',req:false,hint:'artistic style or reference'},{name:'aspect_ratio',label:'Aspect Ratio',type:'select',req:false,options:['1:1','16:9','9:16','3:2','2:3']},{name:'negative_prompt',label:'Negative Prompt',type:'text',req:false}] },
+  { id: 'image_upscale', name: 'Upscale Image', desc: 'Enhance image resolution with AI-powered upscaling.', cmd: 'image_upscale', cat: 'image-music', icon: '🎨', params: [{name:'image_url',label:'Image URL',type:'text',req:true},{name:'scale',label:'Scale',type:'select',req:false,options:['2x','4x']}] },
+  { id: 'generate_music', name: 'Generate Music', desc: 'Create original music tracks from text prompts with genre and mood control.', cmd: 'generate_music', cat: 'image-music', icon: '🎵', params: [{name:'prompt',label:'Music Prompt',type:'textarea',req:true,hint:'e.g. upbeat lo-fi hip hop, 120bpm'},{name:'duration',label:'Duration (sec)',type:'number',req:false,hint:'5-60 seconds'},{name:'genre',label:'Genre',type:'text',req:false},{name:'mood',label:'Mood',type:'text',req:false}] },
+  { id: 'music_video', name: 'Music Video', desc: 'Generate a full music video synced to an audio track.', cmd: 'music_video', cat: 'image-music', icon: '🎵', params: [{name:'audio_url',label:'Audio URL',type:'text',req:true},{name:'style',label:'Visual Style',type:'text',req:false},{name:'prompt',label:'Visual Prompt',type:'textarea',req:false}] },
+  { id: 'image_to_image', name: 'Image to Image', desc: 'Transform an existing image with a text prompt while preserving structure.', cmd: 'image_to_image', cat: 'image-music', icon: '🎨', params: [{name:'image_url',label:'Source Image URL',type:'text',req:true},{name:'prompt',label:'Transform Prompt',type:'textarea',req:true},{name:'strength',label:'Strength (0-1)',type:'number',req:false,hint:'How much to change the image'}] },
+
+  // EDIT & EFFECTS
+  { id: 'pikaffects', name: 'Pikaffects', desc: 'Apply cinematic special effects to videos — explosions, melting, dissolve, and more.', cmd: 'pikaffects', cat: 'edit-effects', icon: '✨', params: [{name:'video_url',label:'Video URL',type:'text',req:true},{name:'effect',label:'Effect',type:'select',req:true,options:['explode','melt','crush','inflate','deflate','dissolve','fly','levitate','crumble','cake','ta-da','vortex','bounce','burst','squish','squash','zap','shrink','balloons','heart-balloon']},{name:'prompt',label:'Custom Prompt',type:'textarea',req:false}] },
+  { id: 'video_transition', name: 'Video Transition', desc: 'Create smooth transitions between two video clips.', cmd: 'video_transition', cat: 'edit-effects', icon: '✂️', params: [{name:'video_url_1',label:'Video 1 URL',type:'text',req:true},{name:'video_url_2',label:'Video 2 URL',type:'text',req:true},{name:'transition_type',label:'Transition',type:'select',req:false,options:['morph','fade','wipe','zoom']}] },
+  { id: 'add_text_overlay', name: 'Add Text Overlay', desc: 'Add animated text overlays and titles to your video.', cmd: 'add_text_overlay', cat: 'edit-effects', icon: '✂️', params: [{name:'video_url',label:'Video URL',type:'text',req:true},{name:'text',label:'Text',type:'text',req:true},{name:'position',label:'Position',type:'select',req:false,options:['top','center','bottom']},{name:'font_size',label:'Font Size',type:'number',req:false},{name:'color',label:'Color',type:'text',req:false,hint:'hex or color name'}] },
+  { id: 'video_watermark', name: 'Remove Watermark', desc: 'Remove watermarks and logos from video footage with AI inpainting.', cmd: 'video_watermark', cat: 'edit-effects', icon: '✂️', params: [{name:'video_url',label:'Video URL',type:'text',req:true},{name:'region',label:'Region',type:'text',req:false,hint:'x,y,width,height or describe location'}] },
+  { id: 'inpaint_video', name: 'Inpaint Video', desc: 'Replace or remove objects in a video using AI inpainting.', cmd: 'inpaint_video', cat: 'edit-effects', icon: '✂️', params: [{name:'video_url',label:'Video URL',type:'text',req:true},{name:'mask_url',label:'Mask URL',type:'text',req:false,hint:'White=inpaint, Black=keep'},{name:'prompt',label:'Replacement Prompt',type:'textarea',req:false}] },
+  { id: 'video_reframe', name: 'Reframe Video', desc: 'Intelligently reframe video to a new aspect ratio using smart crop.', cmd: 'video_reframe', cat: 'edit-effects', icon: '✂️', params: [{name:'video_url',label:'Video URL',type:'text',req:true},{name:'target_ratio',label:'Target Ratio',type:'select',req:true,options:['16:9','9:16','1:1','4:3']}] },
+  { id: 'background_removal', name: 'Remove Background', desc: 'Remove the background from a video or image automatically.', cmd: 'background_removal', cat: 'edit-effects', icon: '✂️', params: [{name:'url',label:'Video or Image URL',type:'text',req:true}] },
+  { id: 'outpaint_video', name: 'Outpaint Video', desc: 'Extend the frame boundaries of a video with AI-generated content.', cmd: 'outpaint_video', cat: 'edit-effects', icon: '✂️', params: [{name:'video_url',label:'Video URL',type:'text',req:true},{name:'direction',label:'Expand Direction',type:'select',req:false,options:['all','left','right','up','down']},{name:'scale',label:'Scale Factor',type:'number',req:false}] },
+  { id: 'video_color_grade', name: 'Color Grade', desc: 'Apply cinematic color grading to your video with preset LUTs.', cmd: 'video_color_grade', cat: 'edit-effects', icon: '✂️', params: [{name:'video_url',label:'Video URL',type:'text',req:true},{name:'style',label:'Grade Style',type:'select',req:false,options:['cinematic','vintage','neon','warm','cool','b&w','golden_hour']}] },
+  { id: 'video_stabilize', name: 'Stabilize Video', desc: 'Remove camera shake and stabilize shaky footage.', cmd: 'video_stabilize', cat: 'edit-effects', icon: '✂️', params: [{name:'video_url',label:'Video URL',type:'text',req:true},{name:'strength',label:'Stabilization Strength',type:'select',req:false,options:['low','medium','high']}] },
+  { id: 'slow_motion', name: 'Slow Motion', desc: 'Generate smooth slow-motion video with AI frame interpolation.', cmd: 'slow_motion', cat: 'edit-effects', icon: '✂️', params: [{name:'video_url',label:'Video URL',type:'text',req:true},{name:'factor',label:'Slow Factor',type:'select',req:false,options:['2x','4x','8x']}] },
+
+  // VOICE & AUDIO
+  { id: 'text_to_speech', name: 'Text to Speech', desc: 'Convert text to natural-sounding speech with hundreds of voice options.', cmd: 'text_to_speech', cat: 'voice-audio', icon: '🎙️', params: [{name:'text',label:'Text',type:'textarea',req:true,hint:'Text to convert to speech'},{name:'voice',label:'Voice ID',type:'text',req:false,hint:'Voice name or ID'},{name:'speed',label:'Speed',type:'number',req:false,hint:'0.5 - 2.0, default 1.0'},{name:'language',label:'Language',type:'text',req:false,hint:'e.g. en-US, es-ES'}] },
+  { id: 'voice_clone', name: 'Voice Clone', desc: 'Clone a voice from a sample audio file for custom TTS.', cmd: 'voice_clone', cat: 'voice-audio', icon: '🎙️', params: [{name:'audio_url',label:'Sample Audio URL',type:'text',req:true,hint:'5-30 seconds of clean voice audio'},{name:'name',label:'Voice Name',type:'text',req:true,hint:'Name for this cloned voice'}] },
+  { id: 'voice_changer', name: 'Voice Changer', desc: 'Transform the voice in an audio or video file.', cmd: 'voice_changer', cat: 'voice-audio', icon: '🎙️', params: [{name:'url',label:'Audio/Video URL',type:'text',req:true},{name:'target_voice',label:'Target Voice',type:'text',req:false,hint:'Voice ID or description'}] },
+  { id: 'lip_sync', name: 'Lip Sync', desc: 'Sync a character\'s lip movements to an audio track automatically.', cmd: 'lip_sync', cat: 'voice-audio', icon: '🎙️', params: [{name:'video_url',label:'Video URL',type:'text',req:true},{name:'audio_url',label:'Audio URL',type:'text',req:true,hint:'New audio to sync lips to'}] },
+  { id: 'dubbing', name: 'Dubbing', desc: 'Dub a video into a different language with lip sync.', cmd: 'dubbing', cat: 'voice-audio', icon: '🎙️', params: [{name:'video_url',label:'Video URL',type:'text',req:true},{name:'target_language',label:'Target Language',type:'text',req:true,hint:'e.g. Spanish, French, Japanese'},{name:'voice',label:'Voice Style',type:'text',req:false}] },
+  { id: 'audio_cleanup', name: 'Audio Cleanup', desc: 'Remove background noise and enhance audio clarity.', cmd: 'audio_cleanup', cat: 'voice-audio', icon: '🎙️', params: [{name:'url',label:'Audio/Video URL',type:'text',req:true},{name:'level',label:'Cleanup Level',type:'select',req:false,options:['light','medium','aggressive']}] },
+  { id: 'sound_effects', name: 'Sound Effects', desc: 'Generate custom sound effects from text descriptions.', cmd: 'sound_effects', cat: 'voice-audio', icon: '🎙️', params: [{name:'prompt',label:'Sound Effect Prompt',type:'textarea',req:true,hint:'e.g. distant thunder with rain'},{name:'duration',label:'Duration (sec)',type:'number',req:false}] },
+  { id: 'add_audio_to_video', name: 'Add Audio to Video', desc: 'Merge an audio track with a video file.', cmd: 'add_audio_to_video', cat: 'voice-audio', icon: '🎙️', params: [{name:'video_url',label:'Video URL',type:'text',req:true},{name:'audio_url',label:'Audio URL',type:'text',req:true},{name:'mix_volume',label:'Mix Volume (0-1)',type:'number',req:false}] },
+
+  // IDENTITY
+  { id: 'face_swap', name: 'Face Swap', desc: 'Swap faces between source and target images or videos.', cmd: 'face_swap', cat: 'identity', icon: '👤', params: [{name:'source_url',label:'Source Face URL',type:'text',req:true,hint:'Image with the face to use'},{name:'target_url',label:'Target URL',type:'text',req:true,hint:'Image or video to swap face into'}] },
+  { id: 'face_enhance', name: 'Face Enhance', desc: 'Restore, enhance, and sharpen faces in images and videos.', cmd: 'face_enhance', cat: 'identity', icon: '👤', params: [{name:'url',label:'Image/Video URL',type:'text',req:true},{name:'strength',label:'Enhancement Strength',type:'select',req:false,options:['light','medium','strong']}] },
+  { id: 'avatar_generate', name: 'Generate Avatar', desc: 'Create a custom AI avatar from a photo reference.', cmd: 'avatar_generate', cat: 'identity', icon: '👤', params: [{name:'reference_url',label:'Reference Image URL',type:'text',req:true},{name:'style',label:'Avatar Style',type:'text',req:false,hint:'e.g. 3D cartoon, anime, realistic'},{name:'prompt',label:'Additional Prompt',type:'textarea',req:false}] },
+  { id: 'virtual_tryon', name: 'Virtual Try-On', desc: 'Digitally dress a model in clothing items.', cmd: 'virtual_tryon', cat: 'identity', icon: '👤', params: [{name:'model_url',label:'Model Image URL',type:'text',req:true},{name:'garment_url',label:'Garment Image URL',type:'text',req:true}] },
+  { id: 'age_transform', name: 'Age Transform', desc: 'Make a person look younger or older in a photo or video.', cmd: 'age_transform', cat: 'identity', icon: '👤', params: [{name:'url',label:'Image/Video URL',type:'text',req:true},{name:'target_age',label:'Target Age',type:'number',req:false,hint:'Approximate age in years'},{name:'direction',label:'Direction',type:'select',req:false,options:['younger','older']}] },
+
+  // UTILITIES
+  { id: 'get_job_status', name: 'Get Job Status', desc: 'Poll the status of any Pika generation job by ID.', cmd: 'get_job_status', cat: 'utilities', icon: '🔧', params: [{name:'job_id',label:'Job ID',type:'text',req:true,hint:'The job ID returned from a generation request'}] },
+  { id: 'get_video_info', name: 'Get Video Info', desc: 'Retrieve metadata and details about a Pika video asset.', cmd: 'get_video_info', cat: 'utilities', icon: '🔧', params: [{name:'video_id',label:'Video ID or URL',type:'text',req:true}] },
+  { id: 'list_jobs', name: 'List Jobs', desc: 'List all recent generation jobs with status and output URLs.', cmd: 'list_jobs', cat: 'utilities', icon: '🔧', params: [{name:'limit',label:'Limit',type:'number',req:false,hint:'Max results (default 20)'},{name:'status',label:'Filter by Status',type:'select',req:false,options:['all','pending','processing','completed','failed']}] },
+  { id: 'delete_asset', name: 'Delete Asset', desc: 'Delete a Pika asset (video, image, or audio) by ID.', cmd: 'delete_asset', cat: 'utilities', icon: '🔧', params: [{name:'asset_id',label:'Asset ID',type:'text',req:true}] },
+  { id: 'get_account_info', name: 'Account Info', desc: 'Get your Pika account details, credit balance, and quota.', cmd: 'get_account_info', cat: 'utilities', icon: '🔧', params: [] },
+  { id: 'list_models', name: 'List Models', desc: 'List all available Pika generation models and their capabilities.', cmd: 'list_models', cat: 'utilities', icon: '🔧', params: [] },
+  { id: 'health_check', name: 'Health Check', desc: 'Verify the Pika MCP server connection and API status.', cmd: 'health_check', cat: 'utilities', icon: '🔧', params: [] },
+  { id: 'list_effects', name: 'List Effects', desc: 'Get a full list of available Pikaffects with descriptions.', cmd: 'list_effects', cat: 'utilities', icon: '🔧', params: [] },
+
+  // SKILLS
+  { id: 'skill_podcast', name: 'Podcast Skill', desc: 'Generate a full AI podcast episode with hosts, dialogue, and audio mixing. Autonomous multi-step workflow.', cmd: '/pika:podcast', cat: 'skills', icon: '🎙️', badge: 'skill', params: [{name:'topic',label:'Topic / Subject',type:'textarea',req:true,hint:'What should the podcast be about?'},{name:'duration',label:'Duration (min)',type:'number',req:false,hint:'Target length, default 5 min'},{name:'hosts',label:'Number of Hosts',type:'select',req:false,options:['1','2']},{name:'style',label:'Style',type:'text',req:false,hint:'e.g. conversational, interview, educational'}] },
+  { id: 'skill_explainer', name: 'Explainer Skill', desc: 'Create an explainer video with script, voiceover, and visuals from a topic.', cmd: '/pika:explainer', cat: 'skills', icon: '🎬', badge: 'skill', params: [{name:'topic',label:'Topic',type:'textarea',req:true,hint:'What needs to be explained?'},{name:'audience',label:'Target Audience',type:'text',req:false,hint:'e.g. beginners, executives, kids'},{name:'duration',label:'Duration (sec)',type:'number',req:false,hint:'15-120 seconds'},{name:'style',label:'Visual Style',type:'text',req:false}] },
+  { id: 'skill_ugc', name: 'UGC Ads Skill', desc: 'Generate user-generated-content style ad videos with authentic feel and conversion hooks.', cmd: '/pika:ugc-ads', cat: 'skills', icon: '📱', badge: 'skill', params: [{name:'product',label:'Product / Brand',type:'text',req:true,hint:'Product name or brand'},{name:'hook',label:'Opening Hook',type:'textarea',req:false,hint:'First 3 seconds attention grabber'},{name:'cta',label:'Call to Action',type:'text',req:false,hint:'e.g. Shop now, Link in bio'},{name:'platform',label:'Platform',type:'select',req:false,options:['TikTok','Instagram Reels','YouTube Shorts','All']}] }
+];
+
+const CAT_META = {
+  'generate-video': { icon: '🎬', title: 'Generate Video' },
+  'image-music':    { icon: '🎨', title: 'Image & Music' },
+  'edit-effects':   { icon: '✂️', title: 'Edit & Effects' },
+  'voice-audio':    { icon: '🎙️', title: 'Voice & Audio' },
+  'identity':       { icon: '👤', title: 'Identity' },
+  'utilities':      { icon: '🔧', title: 'Utilities' },
+  'skills':         { icon: '⚡', title: 'Skills' }
+};
+
+let currentTool = null;
+let searchIdx = -1;
+
+// =====================
+// RENDER
+// =====================
+function renderGrid(filter = 'all') {
+  const grid = document.getElementById('tool-grid');
+  grid.innerHTML = '';
+  const cats = filter === 'all' ? Object.keys(CAT_META) : [filter];
+  cats.forEach(cat => {
+    const tools = TOOLS.filter(t => t.cat === cat);
+    if (!tools.length) return;
+    const m = CAT_META[cat];
+    const sec = document.createElement('div');
+    sec.innerHTML = `
+      <div class="section-header">
+        <span class="section-icon">${m.icon}</span>
+        <span class="section-title">${m.title}</span>
+        <span class="section-count">${tools.length}</span>
+      </div>
+      <div class="cards-grid">${tools.map(cardHTML).join('')}</div>
+    `;
+    grid.appendChild(sec);
+  });
+}
+
+function cardHTML(t) {
+  const badge = (t.badge === 'skill') ? '<span class="card-badge badge-skill">SKILL</span>' : '<span class="card-badge badge-tool">TOOL</span>';
+  return `<div class="card" onclick="openModal('${t.id}')">
+    <div class="card-header"><span class="card-title">${t.icon} ${t.name}</span>${badge}</div>
+    <div class="card-desc">${t.desc}</div>
+    <div class="card-footer">
+      <span class="card-cmd">${t.cmd}</span>
+      <button class="run-btn" onclick="event.stopPropagation();openModal('${t.id}')">▶ Run</button>
+    </div>
+  </div>`;
+}
+
+// =====================
+// FILTER
+// =====================
+function filterCat(cat, el) {
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  renderGrid(cat);
+}
+
+// =====================
+// MODAL
+// =====================
+function openModal(id) {
+  currentTool = TOOLS.find(t => t.id === id);
+  if (!currentTool) return;
+  document.getElementById('modal-title').textContent = currentTool.icon + ' ' + currentTool.name;
+  document.getElementById('modal-subtitle').textContent = currentTool.desc;
+  document.getElementById('modal-output').style.display = 'none';
+  renderParams();
+  document.getElementById('run-modal').classList.add('open');
+}
+
+function renderParams() {
+  const c = document.getElementById('modal-params');
+  if (!currentTool.params.length) {
+    c.innerHTML = '<p style="color:var(--text2);font-size:13px;">No parameters required. Click Generate Command to run.</p>';
+    return;
+  }
+  c.innerHTML = currentTool.params.map(p => {
+    const req = p.req ? '<span style="color:var(--red)"> *</span>' : '';
+    let input = '';
+    if (p.type === 'textarea') input = `<textarea class="form-textarea" id="param_${p.name}" placeholder="${p.hint||''}"></textarea>`;
+    else if (p.type === 'select') input = `<select class="form-select" id="param_${p.name}"><option value="">-- Select --</option>${(p.options||[]).map(o=>`<option>${o}</option>`).join('')}</select>`;
+    else input = `<input type="${p.type||'text'}" class="form-input" id="param_${p.name}" placeholder="${p.hint||''}"/>`;
+    const hint = p.hint ? `<div class="form-hint">${p.hint}</div>` : '';
+    return `<div class="form-group"><label class="form-label">${p.label}${req}</label>${input}${hint}</div>`;
+  }).join('');
+}
+
+function generateCommand() {
+  const args = {};
+  (currentTool.params || []).forEach(p => {
+    const el = document.getElementById('param_' + p.name);
+    if (el && el.value.trim()) args[p.name] = el.value.trim();
+  });
+  const required = (currentTool.params || []).filter(p => p.req && !args[p.name]);
+  if (required.length) {
+    required.forEach(p => {
+      const el = document.getElementById('param_' + p.name);
+      if (el) { el.style.borderColor = 'var(--red)'; setTimeout(()=>el.style.borderColor='',2000); }
+    });
+    return;
+  }
+  let cmd;
+  if (currentTool.badge === 'skill') {
+    const argsStr = Object.entries(args).map(([k,v]) => `${k}="${v}"`).join(' ');
+    cmd = `${currentTool.cmd}${argsStr ? ' ' + argsStr : ''}`;
+  } else {
+    const argsStr = Object.entries(args).map(([k,v]) => `${k}="${v}"`).join(', ');
+    cmd = `@pika ${currentTool.cmd}(${argsStr})`;
+  }
+  const out = document.getElementById('modal-output');
+  document.getElementById('output-text').textContent = cmd;
+  out.style.display = 'block';
+}
+
+function closeRunModal() {
+  document.getElementById('run-modal').classList.remove('open');
+  currentTool = null;
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('run-modal')) closeRunModal();
+}
+
+function copyOutput() {
+  const text = document.getElementById('output-text').textContent;
+  navigator.clipboard.writeText(text).then(() => showToast('Copied!'));
+}
+
+// =====================
+// SEARCH
+// =====================
+function openSearch() {
+  document.getElementById('search-overlay').classList.add('open');
+  document.getElementById('search-input').value = '';
+  renderSearchResults('');
+  setTimeout(() => document.getElementById('search-input').focus(), 50);
+}
+
+function closeSearchOut(e) {
+  if (e.target === document.getElementById('search-overlay')) closeSearch();
+}
+
+function closeSearch() {
+  document.getElementById('search-overlay').classList.remove('open');
+  searchIdx = -1;
+}
+
+function doSearch(q) {
+  searchIdx = -1;
+  renderSearchResults(q);
+}
+
+function renderSearchResults(q) {
+  const r = document.getElementById('search-results');
+  const results = q.trim() ? TOOLS.filter(t => t.name.toLowerCase().includes(q.toLowerCase()) || t.desc.toLowerCase().includes(q.toLowerCase()) || t.cmd.toLowerCase().includes(q.toLowerCase())) : TOOLS.slice(0, 12);
+  if (!results.length) { r.innerHTML = '<div class="search-empty">No tools found</div>'; return; }
+  r.innerHTML = results.map((t, i) => `
+    <div class="search-result" data-id="${t.id}" onclick="searchSelect('${t.id}')">
+      <div class="search-result-icon" style="background:var(--surface2)">${t.icon}</div>
+      <div class="search-result-info">
+        <div class="search-result-name">${t.name}</div>
+        <div class="search-result-cat">${CAT_META[t.cat]?.title || t.cat} · ${t.cmd}</div>
+      </div>
+    </div>`).join('');
+}
+
+function searchSelect(id) {
+  closeSearch();
+  showPage('dashboard');
+  setTimeout(() => openModal(id), 100);
+}
+
+function searchKeyNav(e) {
+  const items = document.querySelectorAll('.search-result');
+  if (e.key === 'ArrowDown') { searchIdx = Math.min(searchIdx + 1, items.length - 1); }
+  else if (e.key === 'ArrowUp') { searchIdx = Math.max(searchIdx - 1, 0); }
+  else if (e.key === 'Enter') { if (searchIdx >= 0 && items[searchIdx]) items[searchIdx].click(); return; }
+  else if (e.key === 'Escape') { closeSearch(); return; }
+  items.forEach((el, i) => el.classList.toggle('highlighted', i === searchIdx));
+}
+
+// =====================
+// PAGES
+// =====================
+function showPage(page) {
+  document.getElementById('page-dashboard').classList.toggle('dashboard-page', page === 'dashboard');
+  document.getElementById('page-dashboard').classList.toggle('hidden', page !== 'dashboard');
+  document.getElementById('page-docs').classList.toggle('active', page === 'docs');
+  document.querySelectorAll('.nav-tab').forEach((el, i) => el.classList.toggle('active', (i === 0 && page === 'dashboard') || (i === 1 && page === 'docs')));
+  if (page === 'docs') renderRefTable();
+}
+
+function renderRefTable() {
+  const tbody = document.getElementById('ref-tbody');
+  if (tbody.innerHTML) return;
+  tbody.innerHTML = TOOLS.map(t => `<tr><td>${t.cmd}</td><td>${t.desc}</td><td>${CAT_META[t.cat]?.title||t.cat}</td></tr>`).join('');
+}
+
+// =====================
+// THEME
+// =====================
+function toggleTheme() {
+  const root = document.documentElement;
+  const isDark = root.getAttribute('data-theme') === 'dark';
+  root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.querySelector('.theme-toggle').textContent = isDark ? '🌙' : '☀️';
+}
+
+// =====================
+// TOAST
+// =====================
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// =====================
+// KEYBOARD SHORTCUTS
+// =====================
+document.addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
+  if (e.key === 'Escape') {
+    closeRunModal();
+    closeSearch();
+  }
+});
+
+// =====================
+// INIT
+// =====================
+renderGrid();
+</script>
+</body>
+</html>
