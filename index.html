@@ -4,350 +4,481 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pika MCP Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
-  :root[data-theme="dark"] {
-    --bg: #0d0d0f;
-    --surface: #18181b;
-    --surface2: #27272a;
-    --border: #3f3f46;
-    --text: #fafafa;
-    --text2: #a1a1aa;
-    --accent: #7c3aed;
-    --accent2: #a78bfa;
-    --green: #10b981;
-    --orange: #f59e0b;
-    --red: #ef4444;
-    --blue: #3b82f6;
-    --pink: #ec4899;
-    --cyan: #06b6d4;
-    --skill-bg: rgba(236,72,153,.08);
-    --skill-border: rgba(236,72,153,.3);
+  :root {
+    --bg:         #08080a;
+    --surface:    #0f0f12;
+    --surface2:   #17171c;
+    --surface3:   #1f1f26;
+    --border:     #2a2a35;
+    --border2:    #3a3a48;
+    --text:       #f0f0f4;
+    --text2:      #8888a0;
+    --text3:      #55556a;
+    --lime:       #c8ff00;
+    --lime-dim:   rgba(200,255,0,.12);
+    --lime-glow:  rgba(200,255,0,.25);
+    --pink:       #ff2cf4;
+    --pink-dim:   rgba(255,44,244,.1);
+    --pink-glow:  rgba(255,44,244,.22);
+    --cyan:       #00e5ff;
+    --cyan-dim:   rgba(0,229,255,.1);
+    --green-term: #00ff88;
+    --green-bg:   #041208;
+    --blue:       #4f8cff;
+    --orange:     #ff8c00;
+    --red:        #ff4040;
+    --skill-glow: rgba(255,44,244,.15);
+    --font-body:  'Syne', system-ui, sans-serif;
+    --font-mono:  'Space Mono', 'Fira Code', monospace;
   }
   :root[data-theme="light"] {
-    --bg: #f4f4f5;
-    --surface: #ffffff;
-    --surface2: #f4f4f5;
-    --border: #d4d4d8;
-    --text: #18181b;
-    --text2: #71717a;
-    --accent: #7c3aed;
-    --accent2: #6d28d9;
-    --green: #059669;
-    --orange: #d97706;
-    --red: #dc2626;
-    --blue: #2563eb;
-    --pink: #db2777;
-    --cyan: #0891b2;
-    --skill-bg: rgba(219,39,119,.06);
-    --skill-border: rgba(219,39,119,.25);
+    --bg:         #f0f0f4;
+    --surface:    #ffffff;
+    --surface2:   #f4f4f8;
+    --surface3:   #eaeaf0;
+    --border:     #d0d0dc;
+    --border2:    #b8b8c8;
+    --text:       #0f0f14;
+    --text2:      #52526a;
+    --text3:      #9090aa;
+    --lime:       #5a9c00;
+    --lime-dim:   rgba(90,156,0,.1);
+    --lime-glow:  rgba(90,156,0,.2);
+    --pink:       #c200b8;
+    --pink-dim:   rgba(194,0,184,.08);
+    --pink-glow:  rgba(194,0,184,.18);
+    --cyan:       #0088bb;
+    --cyan-dim:   rgba(0,136,187,.08);
+    --green-term: #1a7a40;
+    --green-bg:   #f0faf4;
+    --blue:       #2a5ccc;
+    --skill-glow: rgba(194,0,184,.1);
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-
-  /* NAV */
-  nav { display: flex; align-items: center; justify-content: space-between; padding: 0 24px; height: 60px; background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 28px; height: 58px;
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+  }
   .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-  .nav-brand-logo { height: 28px; width: auto; display: block; }
-  .nav-brand-badge { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; letter-spacing: .04em; text-transform: uppercase; }
-  .nav-actions { display: flex; align-items: center; gap: 12px; }
-  .search-trigger { display: flex; align-items: center; gap: 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 6px 14px; cursor: pointer; color: var(--text2); font-size: 13px; transition: all .2s; }
-  .search-trigger:hover { border-color: var(--accent); color: var(--text); }
-  .kbd { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; font-size: 11px; }
-  .theme-toggle { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 16px; transition: all .2s; }
-  .theme-toggle:hover { border-color: var(--accent); }
-  .nav-tabs { display: flex; gap: 4px; }
-  .nav-tab { padding: 6px 14px; border-radius: 6px; border: none; background: none; color: var(--text2); font-size: 13px; cursor: pointer; transition: all .2s; }
-  .nav-tab.active, .nav-tab:hover { background: var(--surface2); color: var(--text); }
-  .nav-tab.active { color: var(--accent2); }
-
-  /* HERO */
-  .hero { padding: 40px 24px 0; max-width: 1200px; margin: 0 auto; }
-  .hero-brand { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
-  .hero-logo { height: 40px; width: auto; }
-  .hero-divider { width: 1px; height: 32px; background: var(--border); }
-  .hero-sub { font-size: 22px; font-weight: 700; color: var(--text2); }
-  .hero-sub span { background: linear-gradient(135deg, var(--accent2), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .hero p { color: var(--text2); font-size: 15px; margin-bottom: 24px; }
-  .stats { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 0; }
-  .stat-chip { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 14px; font-size: 12px; color: var(--text2); }
-  .stat-chip strong { color: var(--text); }
-
-  /* FILTER PILLS */
-  .filter-bar { padding: 20px 24px 0; max-width: 1200px; margin: 0 auto; display: flex; gap: 8px; flex-wrap: wrap; }
-  .pill { padding: 6px 16px; border-radius: 20px; border: 1px solid var(--border); background: none; color: var(--text2); font-size: 13px; cursor: pointer; transition: all .2s; white-space: nowrap; }
-  .pill:hover { border-color: var(--accent); color: var(--text); }
-  .pill.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-
-  /* MAIN */
-  .main { padding: 24px; max-width: 1200px; margin: 0 auto; }
-
-  /* COLLAPSIBLE SECTION */
-  .cat-section { margin-bottom: 10px; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; transition: border-color .2s; }
-  .cat-section:hover { border-color: rgba(124,58,237,.3); }
-  .cat-section.is-skills { border-color: var(--skill-border); background: var(--skill-bg); }
-  .cat-section.is-skills:hover { border-color: var(--pink); }
-
-  .cat-toggle { width: 100%; display: flex; align-items: center; gap: 12px; padding: 14px 18px; background: none; border: none; color: var(--text); cursor: pointer; text-align: left; transition: background .15s; }
-  .cat-toggle:hover { background: rgba(255,255,255,.03); }
-  .cat-section.is-skills .cat-toggle:hover { background: rgba(236,72,153,.05); }
-
-  .cat-icon { font-size: 20px; flex-shrink: 0; }
-  .cat-title { font-size: 16px; font-weight: 600; flex: 1; }
-  .cat-count { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 2px 10px; font-size: 12px; color: var(--text2); flex-shrink: 0; }
-  .cat-section.is-skills .cat-count { background: rgba(236,72,153,.12); border-color: rgba(236,72,153,.25); color: var(--pink); }
-  .cat-badge-new { background: rgba(236,72,153,.15); border: 1px solid rgba(236,72,153,.4); color: var(--pink); font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 600; letter-spacing: .03em; flex-shrink: 0; }
-
-  .chevron { font-size: 14px; color: var(--text2); transition: transform .25s cubic-bezier(.16,1,.3,1); flex-shrink: 0; }
+  .nav-logo { height: 26px; width: auto; display: block; }
+  [data-theme="light"] .nav-logo { filter: invert(1) brightness(0.1); }
+  .nav-badge {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase;
+    color: var(--lime); background: var(--lime-dim);
+    border: 1px solid var(--lime-glow); padding: 2px 8px; border-radius: 4px;
+  }
+  .nav-center { display: flex; gap: 2px; }
+  .nav-tab {
+    font-family: var(--font-body); font-size: 13px; font-weight: 500;
+    padding: 6px 14px; border-radius: 6px; border: none;
+    background: none; color: var(--text2); cursor: pointer; transition: all .15s;
+  }
+  .nav-tab:hover, .nav-tab.active { background: var(--surface2); color: var(--text); }
+  .nav-right { display: flex; align-items: center; gap: 10px; }
+  .search-trigger {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 6px 14px; cursor: pointer;
+    color: var(--text2); font-family: var(--font-body); font-size: 12px; transition: all .15s;
+  }
+  .search-trigger:hover { border-color: var(--border2); color: var(--text); }
+  .kbd {
+    background: var(--surface3); border: 1px solid var(--border2);
+    border-radius: 3px; padding: 1px 5px;
+    font-family: var(--font-mono); font-size: 10px; color: var(--text3);
+  }
+  .theme-btn {
+    width: 34px; height: 34px; border-radius: 8px;
+    background: var(--surface2); border: 1px solid var(--border);
+    cursor: pointer; font-size: 15px; display: flex; align-items: center;
+    justify-content: center; transition: border-color .15s;
+  }
+  .theme-btn:hover { border-color: var(--border2); }
+  .hero { max-width: 1240px; margin: 0 auto; padding: 52px 28px 0; }
+  .hero-eyebrow {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--lime); margin-bottom: 18px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .hero-eyebrow::after { content: ''; display: block; height: 1px; width: 40px; background: var(--lime-glow); }
+  .hero-heading {
+    font-size: clamp(36px, 5vw, 60px); font-weight: 800;
+    line-height: 1.05; letter-spacing: -.02em; margin-bottom: 18px;
+  }
+  .hero-heading em { font-style: normal; color: var(--lime); }
+  .hero-sub { font-size: 16px; color: var(--text2); max-width: 560px; margin-bottom: 32px; line-height: 1.65; }
+  .hero-stats {
+    display: flex; gap: 24px; flex-wrap: wrap;
+    padding-bottom: 32px; border-bottom: 1px solid var(--border);
+  }
+  .stat { display: flex; flex-direction: column; gap: 2px; }
+  .stat-num { font-family: var(--font-mono); font-size: 22px; font-weight: 700; line-height: 1; }
+  .stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--text3); }
+  .filter-bar { max-width: 1240px; margin: 0 auto; padding: 20px 28px 0; display: flex; gap: 8px; }
+  .pill {
+    font-family: var(--font-body); font-size: 12px; font-weight: 500;
+    padding: 5px 14px; border-radius: 20px; border: 1px solid var(--border);
+    background: none; color: var(--text2); cursor: pointer; transition: all .15s;
+  }
+  .pill:hover { border-color: var(--border2); color: var(--text); }
+  .pill.active { background: var(--surface2); border-color: var(--border2); color: var(--text); }
+  .main { max-width: 1240px; margin: 0 auto; padding: 24px 28px 80px; display: flex; flex-direction: column; gap: 12px; }
+  .cat-section { border: 1px solid var(--border); border-radius: 16px; overflow: hidden; transition: border-color .2s; }
+  .cat-section:hover { border-color: var(--border2); }
+  .cat-section.is-skills { border-color: rgba(255,44,244,.25); background: linear-gradient(135deg, rgba(255,44,244,.03) 0%, transparent 60%); }
+  .cat-section.is-skills:hover { border-color: rgba(255,44,244,.5); }
+  .cat-toggle {
+    width: 100%; display: flex; align-items: center; gap: 12px;
+    padding: 16px 20px; background: none; border: none; color: var(--text);
+    cursor: pointer; text-align: left; transition: background .15s; font-family: var(--font-body);
+  }
+  .cat-toggle:hover { background: rgba(255,255,255,.02); }
+  .cat-section.is-skills .cat-toggle:hover { background: var(--pink-dim); }
+  .cat-icon { font-size: 18px; flex-shrink: 0; }
+  .cat-title { font-size: 15px; font-weight: 700; letter-spacing: -.01em; flex: 1; }
+  .cat-new {
+    font-family: var(--font-mono); font-size: 9px; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase;
+    color: var(--pink); background: var(--pink-dim);
+    border: 1px solid rgba(255,44,244,.3); padding: 2px 8px; border-radius: 4px; flex-shrink: 0;
+  }
+  .cat-count {
+    font-family: var(--font-mono); font-size: 11px; color: var(--text3);
+    background: var(--surface2); border: 1px solid var(--border);
+    padding: 2px 9px; border-radius: 20px; flex-shrink: 0;
+  }
+  .cat-section.is-skills .cat-count { color: var(--pink); background: var(--pink-dim); border-color: rgba(255,44,244,.25); }
+  .chevron { font-size: 12px; color: var(--text3); transition: transform .25s cubic-bezier(.16,1,.3,1); flex-shrink: 0; }
   .cat-section.open .chevron { transform: rotate(180deg); }
-
   .cat-body { display: none; padding: 0 16px 16px; }
   .cat-section.open .cat-body { display: block; }
-
-  /* CARDS GRID */
-  .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; padding-top: 4px; }
-
-  /* CARD */
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; cursor: pointer; transition: all .2s; position: relative; overflow: hidden; }
-  .card::before { content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity .2s; background: linear-gradient(135deg, var(--accent) 0%, transparent 60%); }
-  .card:hover { border-color: var(--accent); transform: translateY(-1px); box-shadow: 0 4px 20px rgba(124,58,237,.15); }
-  .card:hover::before { opacity: .04; }
-  .card.card-skill { background: color-mix(in srgb, var(--surface) 96%, var(--pink) 4%); border-color: rgba(236,72,153,.2); }
-  .card.card-skill:hover { border-color: var(--pink); box-shadow: 0 4px 20px rgba(236,72,153,.15); }
-  .card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 6px; gap: 8px; }
-  .card-title { font-size: 13px; font-weight: 600; line-height: 1.3; }
-  .card-badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; white-space: nowrap; flex-shrink: 0; }
-  .badge-tool { background: rgba(59,130,246,.15); color: var(--blue); border: 1px solid rgba(59,130,246,.3); }
-  .badge-skill { background: rgba(236,72,153,.15); color: var(--pink); border: 1px solid rgba(236,72,153,.3); }
-  .card-desc { font-size: 12px; color: var(--text2); line-height: 1.45; margin-bottom: 10px; }
-  .card-footer { display: flex; align-items: center; justify-content: space-between; }
-  .card-cmd { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; color: var(--accent2); background: var(--surface2); padding: 2px 8px; border-radius: 4px; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .run-btn { font-size: 11px; padding: 4px 10px; background: var(--accent); border: none; border-radius: 6px; color: #fff; cursor: pointer; transition: all .2s; flex-shrink: 0; }
-  .run-btn:hover { background: var(--accent2); }
-  .run-btn.skill-run { background: var(--pink); }
-  .run-btn.skill-run:hover { background: #be185d; }
-
-  /* SKILLS FEATURED STRIP */
-  .skills-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding-top: 4px; }
-  .skill-featured { background: var(--surface); border: 1px solid rgba(236,72,153,.25); border-radius: 12px; padding: 18px; cursor: pointer; transition: all .2s; position: relative; overflow: hidden; }
-  .skill-featured::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(236,72,153,.07) 0%, transparent 60%); pointer-events: none; }
-  .skill-featured:hover { border-color: var(--pink); transform: translateY(-2px); box-shadow: 0 6px 24px rgba(236,72,153,.18); }
-  .sf-icon { font-size: 28px; margin-bottom: 10px; }
-  .sf-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
-  .sf-desc { font-size: 12px; color: var(--text2); line-height: 1.5; margin-bottom: 14px; }
-  .sf-cmd { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; color: var(--pink); background: rgba(236,72,153,.1); padding: 3px 10px; border-radius: 4px; display: inline-block; margin-bottom: 10px; }
-  .sf-run { width: 100%; padding: 8px; background: var(--pink); border: none; border-radius: 8px; color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .2s; }
-  .sf-run:hover { background: #be185d; }
-
-  /* MODAL */
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.7); backdrop-filter: blur(4px); z-index: 200; display: none; align-items: center; justify-content: center; padding: 24px; }
-  .modal-overlay.open { display: flex; }
-  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; width: 100%; max-width: 580px; max-height: 85vh; overflow-y: auto; }
-  .modal-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-  .modal-title { font-size: 17px; font-weight: 700; }
-  .modal-subtitle { font-size: 13px; color: var(--text2); margin-top: 4px; }
-  .modal-close { background: none; border: none; color: var(--text2); font-size: 20px; cursor: pointer; line-height: 1; padding: 2px 6px; border-radius: 6px; }
-  .modal-close:hover { background: var(--surface2); color: var(--text); }
-  .modal-body { padding: 20px 24px; }
-  .form-group { margin-bottom: 16px; }
-  .form-label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
-  .form-input, .form-select, .form-textarea { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; color: var(--text); font-size: 13px; transition: border-color .2s; }
-  .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--accent); }
-  .form-textarea { min-height: 80px; resize: vertical; font-family: inherit; }
-  .form-hint { font-size: 11px; color: var(--text2); margin-top: 4px; }
-  .output-box { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; color: var(--accent2); white-space: pre-wrap; word-break: break-all; margin-top: 16px; position: relative; }
-  .copy-btn { position: absolute; top: 8px; right: 8px; background: var(--accent); border: none; border-radius: 6px; color: #fff; font-size: 11px; padding: 4px 10px; cursor: pointer; }
-  .copy-btn:hover { background: var(--accent2); }
-  .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
-  .btn { padding: 9px 18px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all .2s; border: none; }
-  .btn-primary { background: var(--accent); color: #fff; }
-  .btn-primary:hover { background: var(--accent2); }
-  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
-  .btn-secondary:hover { border-color: var(--accent); }
-
-  /* SEARCH MODAL */
-  .search-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.8); backdrop-filter: blur(6px); z-index: 300; display: none; align-items: flex-start; justify-content: center; padding: 80px 24px; }
-  .search-overlay.open { display: flex; }
-  .search-box { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; width: 100%; max-width: 560px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,.5); }
-  .search-input-wrap { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--border); }
-  .search-icon { font-size: 16px; color: var(--text2); }
-  .search-input { flex: 1; background: none; border: none; color: var(--text); font-size: 15px; outline: none; }
-  .search-input::placeholder { color: var(--text2); }
-  .search-results { max-height: 400px; overflow-y: auto; padding: 8px; }
-  .search-result { padding: 10px 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: background .15s; }
-  .search-result:hover, .search-result.highlighted { background: var(--surface2); }
-  .search-result-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
-  .search-result-info { flex: 1; min-width: 0; }
-  .search-result-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .search-result-cat { font-size: 11px; color: var(--text2); }
-  .search-empty { padding: 32px; text-align: center; color: var(--text2); font-size: 13px; }
-
-  /* DOCS PAGE */
-  .docs-page { padding: 32px 24px; max-width: 900px; margin: 0 auto; display: none; }
-  .docs-page.active { display: block; }
-  .docs-section { margin-bottom: 36px; }
-  .docs-section h2 { font-size: 20px; font-weight: 700; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
-  .docs-section h3 { font-size: 15px; font-weight: 600; margin: 16px 0 8px; }
-  .docs-section p { font-size: 14px; color: var(--text2); line-height: 1.7; margin-bottom: 10px; }
-  .code-block { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; overflow-x: auto; margin: 10px 0; }
-  .code-block code { color: var(--accent2); white-space: pre; }
-  .ref-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 8px; }
-  .ref-table th { text-align: left; padding: 10px 12px; background: var(--surface2); border-bottom: 2px solid var(--border); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--text2); }
-  .ref-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
-  .ref-table tr:last-child td { border-bottom: none; }
-  .ref-table td:first-child { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; color: var(--accent2); white-space: nowrap; }
-  .ref-table td:nth-child(2) { color: var(--text2); font-size: 12px; }
-  .ref-table tr:hover td { background: var(--surface2); }
-
-  .dashboard-page { display: block; }
-  .dashboard-page.hidden { display: none; }
-
-  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--green); color: #fff; padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 500; z-index: 500; transform: translateY(60px); opacity: 0; transition: all .3s; }
-  .toast.show { transform: translateY(0); opacity: 1; }
-
-  /* Pika logo color invert for light mode */
-  [data-theme="light"] .pika-logo-nav { filter: invert(1); }
-
-  @media (max-width: 768px) {
-    .skills-strip { grid-template-columns: 1fr; }
-    .hero-brand { gap: 10px; }
-    .hero-logo { height: 32px; }
-    .cards-grid { grid-template-columns: 1fr 1fr; }
-    nav { padding: 0 14px; }
-    .main { padding: 14px; }
+  .skills-strip { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; padding-top: 4px; }
+  .skill-card {
+    position: relative; background: var(--surface);
+    border: 1px solid rgba(255,44,244,.2); border-radius: 14px; padding: 20px;
+    cursor: pointer; overflow: hidden; transition: border-color .2s, transform .2s, box-shadow .2s;
   }
-  @media (max-width: 480px) {
+  .skill-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at top left, var(--pink-dim), transparent 70%);
+    pointer-events: none; opacity: 0; transition: opacity .25s;
+  }
+  .skill-card:hover { border-color: var(--pink); transform: translateY(-2px); box-shadow: 0 0 30px var(--skill-glow), 0 8px 24px rgba(0,0,0,.4); }
+  .skill-card:hover::before { opacity: 1; }
+  .skill-icon { font-size: 26px; margin-bottom: 12px; display: block; }
+  .skill-name { font-size: 16px; font-weight: 700; letter-spacing: -.01em; margin-bottom: 6px; }
+  .skill-desc { font-size: 12px; color: var(--text2); line-height: 1.55; margin-bottom: 14px; }
+  .skill-cmd {
+    font-family: var(--font-mono); font-size: 10px; color: var(--pink);
+    background: var(--pink-dim); border: 1px solid rgba(255,44,244,.2);
+    padding: 3px 10px; border-radius: 4px; display: inline-block; margin-bottom: 14px;
+  }
+  .skill-run {
+    width: 100%; padding: 9px; background: var(--pink); border: none; border-radius: 8px;
+    color: #fff; font-family: var(--font-body); font-size: 13px; font-weight: 700;
+    cursor: pointer; transition: all .15s;
+  }
+  .skill-run:hover { background: #ff00ee; box-shadow: 0 0 20px rgba(255,44,244,.4); }
+  .cards-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(240px,1fr)); gap: 8px; padding-top: 4px; }
+  .card {
+    position: relative; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 16px; cursor: pointer;
+    transition: border-color .15s, transform .15s, box-shadow .15s;
+  }
+  .card:hover { border-color: var(--border2); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,.3); }
+  .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+  .card-name { font-size: 13px; font-weight: 600; line-height: 1.3; }
+  .badge { font-family: var(--font-mono); font-size: 9px; font-weight: 700; letter-spacing: .08em; padding: 2px 7px; border-radius: 4px; flex-shrink: 0; text-transform: uppercase; }
+  .badge-tool { color: var(--blue); background: rgba(79,140,255,.1); border: 1px solid rgba(79,140,255,.25); }
+  .badge-skill { color: var(--pink); background: var(--pink-dim); border: 1px solid rgba(255,44,244,.25); }
+  .card-desc { font-size: 11px; color: var(--text2); line-height: 1.5; margin-bottom: 12px; }
+  .card-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .card-cmd {
+    font-family: var(--font-mono); font-size: 10px; color: var(--green-term);
+    background: var(--green-bg); border: 1px solid rgba(0,255,136,.15);
+    padding: 2px 8px; border-radius: 4px; overflow: hidden;
+    text-overflow: ellipsis; white-space: nowrap; max-width: 150px;
+  }
+  [data-theme="light"] .card-cmd { background: #f0faf4; border-color: rgba(26,122,64,.2); }
+  .run-btn {
+    font-family: var(--font-body); font-size: 11px; font-weight: 600;
+    padding: 4px 12px; background: var(--surface3); border: 1px solid var(--border2);
+    border-radius: 6px; color: var(--text); cursor: pointer; transition: all .15s; flex-shrink: 0;
+  }
+  .run-btn:hover { background: var(--lime); color: #000; border-color: var(--lime); }
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.75);
+    backdrop-filter: blur(6px); z-index: 200;
+    display: none; align-items: center; justify-content: center; padding: 24px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface); border: 1px solid var(--border2);
+    border-radius: 18px; width: 100%; max-width: 620px; max-height: 88vh;
+    overflow-y: auto; box-shadow: 0 24px 80px rgba(0,0,0,.6);
+  }
+  .modal.is-skill { border-top: 2px solid var(--pink); box-shadow: 0 0 40px var(--pink-glow), 0 24px 80px rgba(0,0,0,.6); }
+  .modal-header {
+    padding: 22px 24px 18px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+  }
+  .modal-icon { font-size: 24px; margin-bottom: 4px; display: block; }
+  .modal-title { font-size: 18px; font-weight: 800; letter-spacing: -.02em; }
+  .modal-close {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text2); font-size: 16px; cursor: pointer;
+    padding: 4px 9px; line-height: 1; flex-shrink: 0; transition: all .15s;
+  }
+  .modal-close:hover { background: var(--surface3); color: var(--text); }
+  .skill-explainer {
+    margin: 20px 24px 0; padding: 14px 16px;
+    background: var(--pink-dim); border: 1px solid rgba(255,44,244,.2);
+    border-radius: 10px; font-size: 13px; color: var(--text2); line-height: 1.6;
+  }
+  .skill-explainer strong { color: var(--text); }
+  .modal-body { padding: 20px 24px; }
+  .form-section-label {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--text3);
+    margin-bottom: 12px; margin-top: 20px; display: block;
+  }
+  .form-section-label:first-child { margin-top: 0; }
+  .form-group { margin-bottom: 14px; }
+  .form-label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .req { color: var(--red); }
+  .form-input, .form-select, .form-textarea {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 9px 12px; color: var(--text);
+    font-family: var(--font-body); font-size: 13px; transition: border-color .15s;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--border2); }
+  .is-skill .form-input:focus, .is-skill .form-select:focus, .is-skill .form-textarea:focus { border-color: var(--pink); }
+  .form-textarea { min-height: 80px; resize: vertical; }
+  .form-hint { font-size: 11px; color: var(--text3); margin-top: 4px; font-style: italic; }
+  .checkbox-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; cursor: pointer; transition: border-color .15s;
+  }
+  .checkbox-row:hover { border-color: var(--border2); }
+  .checkbox-row input[type="checkbox"] { accent-color: var(--pink); width: 15px; height: 15px; cursor: pointer; }
+  .checkbox-row label { font-size: 13px; cursor: pointer; flex: 1; }
+  .checkbox-row .chk-hint { font-size: 11px; color: var(--text3); }
+  .attach-note {
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 12px 14px; background: rgba(255,140,0,.07);
+    border: 1px solid rgba(255,140,0,.2); border-radius: 10px;
+    margin-top: 20px; font-size: 12px; color: var(--text2); line-height: 1.55;
+  }
+  .attach-note-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .attach-note strong { color: var(--text); display: block; margin-bottom: 2px; font-size: 12px; }
+  .output-box {
+    background: var(--green-bg); border: 1px solid rgba(0,255,136,.2);
+    border-radius: 10px; padding: 14px; font-family: var(--font-mono); font-size: 12px;
+    color: var(--green-term); white-space: pre-wrap; word-break: break-all;
+    margin-top: 20px; position: relative; line-height: 1.6;
+  }
+  [data-theme="light"] .output-box { background: #f0faf4; border-color: rgba(26,122,64,.2); }
+  .copy-btn {
+    position: absolute; top: 8px; right: 8px;
+    background: var(--lime); border: none; border-radius: 6px;
+    color: #000; font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+    padding: 4px 10px; cursor: pointer; transition: opacity .15s;
+  }
+  .copy-btn:hover { opacity: .85; }
+  .modal-footer {
+    padding: 16px 24px; border-top: 1px solid var(--border);
+    display: flex; gap: 10px; justify-content: flex-end;
+  }
+  .btn { font-family: var(--font-body); font-size: 13px; font-weight: 600; padding: 9px 20px; border-radius: 8px; border: none; cursor: pointer; transition: all .15s; }
+  .btn-cancel { background: var(--surface2); border: 1px solid var(--border); color: var(--text2); }
+  .btn-cancel:hover { background: var(--surface3); color: var(--text); }
+  .btn-generate { background: var(--lime); color: #000; font-weight: 700; }
+  .btn-generate:hover { box-shadow: 0 0 20px var(--lime-glow); }
+  .is-skill .btn-generate { background: var(--pink); color: #fff; }
+  .is-skill .btn-generate:hover { box-shadow: 0 0 20px var(--pink-glow); }
+  .search-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.8);
+    backdrop-filter: blur(8px); z-index: 300;
+    display: none; align-items: flex-start; justify-content: center; padding: 80px 24px;
+  }
+  .search-overlay.open { display: flex; }
+  .search-box {
+    background: var(--surface); border: 1px solid var(--border2);
+    border-radius: 14px; width: 100%; max-width: 560px; overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,.6);
+  }
+  .search-top { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--border); }
+  .search-icon-static { font-size: 16px; color: var(--text3); }
+  .search-input { flex: 1; background: none; border: none; color: var(--text); font-family: var(--font-body); font-size: 15px; outline: none; }
+  .search-input::placeholder { color: var(--text3); }
+  .search-results { max-height: 380px; overflow-y: auto; padding: 8px; }
+  .search-result { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; cursor: pointer; transition: background .1s; }
+  .search-result:hover, .search-result.hl { background: var(--surface2); }
+  .sr-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--surface2); display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+  .sr-info { flex: 1; min-width: 0; }
+  .sr-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sr-meta { font-size: 11px; color: var(--text3); font-family: var(--font-mono); }
+  .search-empty { padding: 32px; text-align: center; color: var(--text3); font-size: 13px; }
+  .docs-wrap { max-width: 860px; margin: 0 auto; padding: 40px 28px 80px; }
+  .docs-section { margin-bottom: 40px; }
+  .docs-section h2 { font-size: 22px; font-weight: 800; letter-spacing: -.02em; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  .docs-section h3 { font-size: 14px; font-weight: 700; margin: 20px 0 8px; color: var(--text2); }
+  .docs-section p { font-size: 14px; color: var(--text2); line-height: 1.7; margin-bottom: 10px; }
+  .code-block { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; font-family: var(--font-mono); font-size: 12px; overflow-x: auto; margin: 10px 0; color: var(--green-term); }
+  .ref-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
+  .ref-table th { text-align: left; padding: 10px 12px; background: var(--surface2); border-bottom: 1px solid var(--border2); font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--text3); }
+  .ref-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--text2); }
+  .ref-table td:first-child { font-family: var(--font-mono); font-size: 11px; color: var(--green-term); white-space: nowrap; }
+  .ref-table tr:last-child td { border-bottom: none; }
+  .ref-table tr:hover td { background: var(--surface2); }
+  .page { display: none; }
+  .page.active { display: block; }
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--lime); color: #000;
+    font-family: var(--font-mono); font-size: 12px; font-weight: 700; letter-spacing: .04em;
+    padding: 10px 18px; border-radius: 8px; z-index: 500;
+    transform: translateY(60px); opacity: 0; transition: all .25s cubic-bezier(.16,1,.3,1);
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  @media (max-width: 840px) {
+    .skills-strip { grid-template-columns: 1fr; }
+    .cards-grid { grid-template-columns: repeat(2,1fr); }
+    nav { padding: 0 16px; }
+    .main { padding: 16px 16px 60px; }
+    .hero { padding: 36px 16px 0; }
+    .filter-bar { padding: 16px 16px 0; }
+  }
+  @media (max-width: 520px) {
     .cards-grid { grid-template-columns: 1fr; }
+    .hero-heading { font-size: 30px; }
+    .modal { max-height: 95vh; border-radius: 14px; }
   }
 </style>
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
-  <a class="nav-brand" href="#" onclick="showPage('dashboard');return false;" aria-label="Pika MCP Dashboard">
-    <!-- Pika wordmark SVG (white, adapts to theme) -->
-    <svg class="nav-brand-logo pika-logo-nav" viewBox="0 0 80 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <!-- Lightning bolt -->
-      <path d="M10 2L4 14h5l-2 12 12-14h-6l5-10z" fill="white"/>
-      <!-- PIKA wordmark -->
-      <text x="22" y="20" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="16" font-weight="800" fill="white" letter-spacing="0.5">PIKA</text>
-    </svg>
-    <span class="nav-brand-badge">MCP</span>
+  <a class="nav-brand" href="#" onclick="showPage('dashboard');return false;">
+    <img class="nav-logo" src="https://cdn.pika.art/pika-logo-white.png" alt="Pika"
+      onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<svg class=\'nav-logo\' viewBox=\'0 0 72 24\' fill=\'none\'><path d=\'M8 2L3 12h4.5l-2 10L18 10h-5.5L17 2z\' fill=\'white\'></path><text x=\'21\' y=\'17\' font-family=\'system-ui\' font-size=\'14\' font-weight=\'800\' fill=\'white\' letter-spacing=\'1\'>PIKA</text></svg>')">
+    <span class="nav-badge">MCP</span>
   </a>
-  <div class="nav-tabs">
+  <div class="nav-center">
     <button class="nav-tab active" onclick="showPage('dashboard')">Dashboard</button>
     <button class="nav-tab" onclick="showPage('docs')">Docs &amp; Setup</button>
   </div>
-  <div class="nav-actions">
+  <div class="nav-right">
     <button class="search-trigger" onclick="openSearch()">
       🔍 Search… <span class="kbd">⌘K</span>
     </button>
-    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+    <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">🌙</button>
   </div>
 </nav>
 
-<!-- DASHBOARD PAGE -->
-<div class="dashboard-page" id="page-dashboard">
+<div class="page active" id="page-dashboard">
   <div class="hero">
-    <div class="hero-brand">
-      <!-- Larger Pika logo in hero -->
-      <svg class="hero-logo pika-logo-nav" viewBox="0 0 140 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Pika">
-        <path d="M14 3L6 20h7l-3 17 17-19h-8l7-15z" fill="white"/>
-        <text x="30" y="29" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="24" font-weight="800" fill="white" letter-spacing="1">PIKA</text>
-      </svg>
-      <div class="hero-divider"></div>
-      <div class="hero-sub"><span>MCP Tools</span> Dashboard</div>
-    </div>
-    <p>Browse and run all 42 Pika MCP tools and skills — click any section to expand, then click a card to generate the exact command.</p>
-    <div class="stats">
-      <div class="stat-chip"><strong>42</strong> Tools</div>
-      <div class="stat-chip"><strong>3</strong> Skills</div>
-      <div class="stat-chip"><strong>6</strong> Categories</div>
-      <div class="stat-chip">Live from <strong>Pika-Labs</strong></div>
+    <div class="hero-eyebrow">Pika-Labs · Claude Code · MCP</div>
+    <h1 class="hero-heading">The MCP Tools<br><em>Dashboard</em></h1>
+    <p class="hero-sub">Browse all 42 Pika MCP tools and skills. Click any card to build the exact command — then paste it into Claude Code.</p>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">42</span><span class="stat-label">Tools</span></div>
+      <div class="stat"><span class="stat-num">3</span><span class="stat-label">Skills</span></div>
+      <div class="stat"><span class="stat-num">6</span><span class="stat-label">Categories</span></div>
+      <div class="stat"><span class="stat-num">Live</span><span class="stat-label">Pika-Labs</span></div>
     </div>
   </div>
-
   <div class="filter-bar">
     <button class="pill active" onclick="expandAll(this)">Expand All</button>
     <button class="pill" onclick="collapseAll(this)">Collapse All</button>
   </div>
-
   <div class="main" id="tool-grid"></div>
 </div>
 
-<!-- DOCS PAGE -->
-<div class="docs-page" id="page-docs">
-  <div class="docs-section">
-    <h2>🚀 Quick Setup</h2>
-    <h3>1. Install the Pika MCP plugin</h3>
-    <div class="code-block"><code>claude mcp install pika-labs/pika-plugins</code></div>
-    <h3>2. Or configure .mcp.json manually</h3>
-    <div class="code-block"><code>{
+<div class="page" id="page-docs">
+  <div class="docs-wrap">
+    <div class="docs-section">
+      <h2>🚀 Quick Setup</h2>
+      <h3>1. Install Pika MCP</h3>
+      <div class="code-block">claude mcp install pika-labs/pika-plugins</div>
+      <h3>2. Or add to .mcp.json manually</h3>
+      <div class="code-block">{
   "mcpServers": {
     "pika": {
       "command": "npx",
       "args": ["-y", "@pika-labs/mcp"],
-      "env": {
-        "PIKA_DEV_KEY": "your_key_here"
-      }
+      "env": { "PIKA_DEV_KEY": "your_key_here" }
     }
   }
-}</code></div>
-    <h3>3. Verify connection in Claude Code</h3>
-    <div class="code-block"><code>/mcp
-# You should see pika listed as connected</code></div>
-  </div>
-  <div class="docs-section">
-    <h2>📚 Skills Setup</h2>
-    <p>Skills are autonomous workflows that Claude follows. Install them by adding the skill folder to your <code>.claude/skills/</code> directory.</p>
-    <div class="code-block"><code># In your project root:
-git clone https://github.com/tatinc23/Pika-Skills-TAT.git
-cp -r Pika-Skills-TAT/skills/* .claude/skills/
+}</div>
+      <h3>3. Verify in Claude Code</h3>
+      <div class="code-block">/mcp
+# pika should appear as connected</div>
+    </div>
+    <div class="docs-section">
+      <h2>⚡ Skills Setup</h2>
+      <p>Skills are autonomous multi-step workflows. Install them by adding the skill folder to your project's .claude/skills/ directory.</p>
+      <div class="code-block">git clone https://github.com/Pika-Labs/Pika-Plugins.git
+cp -r Pika-Plugins/skills/* .claude/skills/
 
-# Available skills:
-# /pika:podcast     — AI podcast generation
-# /pika:explainer   — Explainer video creation
-# /pika:ugc-ads     — UGC ad generation</code></div>
-  </div>
-  <div class="docs-section">
-    <h2>🗂️ Full Tool Reference</h2>
-    <table class="ref-table">
-      <thead><tr><th>Command</th><th>Description</th><th>Category</th></tr></thead>
-      <tbody id="ref-tbody"></tbody>
-    </table>
+# /pika:podcast   — two-host dialogue video from topic or URL
+# /pika:explainer — 65-80 sec explainer from a URL
+# /pika:ugc-ads   — 15 sec vertical UGC ad from a product URL</div>
+    </div>
+    <div class="docs-section">
+      <h2>📎 Attaching Images</h2>
+      <p>Skills that accept image inputs work through Claude Code's standard file attachment. Drag images into the Claude Code terminal or IDE, or provide a publicly hosted HTTPS URL as a parameter.</p>
+    </div>
+    <div class="docs-section">
+      <h2>🗂️ Full Tool Reference</h2>
+      <table class="ref-table">
+        <thead><tr><th>Command</th><th>Description</th><th>Category</th></tr></thead>
+        <tbody id="ref-tbody"></tbody>
+      </table>
+    </div>
   </div>
 </div>
 
-<!-- QUICK RUN MODAL -->
-<div class="modal-overlay" id="run-modal" onclick="closeModal(event)">
-  <div class="modal">
+<div class="modal-overlay" id="run-modal">
+  <div class="modal" id="modal-inner">
     <div class="modal-header">
       <div>
-        <div class="modal-title" id="modal-title">Tool Name</div>
-        <div class="modal-subtitle" id="modal-subtitle">Description</div>
+        <span class="modal-icon" id="modal-icon"></span>
+        <div class="modal-title" id="modal-title"></div>
       </div>
-      <button class="modal-close" onclick="closeRunModal()">✕</button>
+      <button class="modal-close" onclick="closeRunModal()">&#x2715;</button>
     </div>
-    <div class="modal-body">
-      <div id="modal-params"></div>
-      <div class="output-box" id="modal-output" style="display:none">
-        <button class="copy-btn" onclick="copyOutput()">Copy</button>
-        <span id="output-text"></span>
-      </div>
-    </div>
+    <div id="modal-explainer"></div>
+    <div class="modal-body" id="modal-body"></div>
     <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeRunModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="generateCommand()">Generate Command</button>
+      <button class="btn btn-cancel" onclick="closeRunModal()">Cancel</button>
+      <button class="btn btn-generate" onclick="generateCommand()">Generate Command</button>
     </div>
   </div>
 </div>
 
-<!-- SEARCH MODAL -->
-<div class="search-overlay" id="search-overlay" onclick="closeSearchOut(event)">
+<div class="search-overlay" id="search-overlay">
   <div class="search-box">
-    <div class="search-input-wrap">
-      <span class="search-icon">🔍</span>
-      <input type="text" class="search-input" id="search-input" placeholder="Search tools and skills…" oninput="doSearch(this.value)" onkeydown="searchKeyNav(event)">
+    <div class="search-top">
+      <span class="search-icon-static">🔍</span>
+      <input type="text" class="search-input" id="search-input" placeholder="Search tools and skills…">
     </div>
     <div class="search-results" id="search-results"></div>
   </div>
@@ -356,241 +487,471 @@ cp -r Pika-Skills-TAT/skills/* .claude/skills/
 <div class="toast" id="toast">Copied!</div>
 
 <script>
+// All innerHTML usage in this file is safe: content is sourced exclusively from
+// the hardcoded TOOLS/CAT_META arrays below — never from user input or external data.
+
 const TOOLS = [
-  { id: 'skill_podcast', name: 'Podcast Skill', desc: 'Generate a full AI podcast episode with hosts, dialogue, and audio mixing. Autonomous multi-step workflow.', cmd: '/pika:podcast', cat: 'skills', icon: '🎙️', badge: 'skill', params: [{name:'topic',label:'Topic / Subject',type:'textarea',req:true,hint:'What should the podcast be about?'},{name:'duration',label:'Duration (min)',type:'number',req:false,hint:'Target length, default 5 min'},{name:'hosts',label:'Number of Hosts',type:'select',req:false,options:['1','2']},{name:'style',label:'Style',type:'text',req:false,hint:'e.g. conversational, interview, educational'}] },
-  { id: 'skill_explainer', name: 'Explainer Skill', desc: 'Create an explainer video with script, voiceover, and visuals from a topic.', cmd: '/pika:explainer', cat: 'skills', icon: '🎬', badge: 'skill', params: [{name:'topic',label:'Topic',type:'textarea',req:true,hint:'What needs to be explained?'},{name:'audience',label:'Target Audience',type:'text',req:false,hint:'e.g. beginners, executives, kids'},{name:'duration',label:'Duration (sec)',type:'number',req:false,hint:'15-120 seconds'},{name:'style',label:'Visual Style',type:'text',req:false}] },
-  { id: 'skill_ugc', name: 'UGC Ads Skill', desc: 'Generate user-generated-content style ad videos with authentic feel and conversion hooks.', cmd: '/pika:ugc-ads', cat: 'skills', icon: '📱', badge: 'skill', params: [{name:'product',label:'Product / Brand',type:'text',req:true,hint:'Product name or brand'},{name:'hook',label:'Opening Hook',type:'textarea',req:false,hint:'First 3 seconds attention grabber'},{name:'cta',label:'Call to Action',type:'text',req:false,hint:'e.g. Shop now, Link in bio'},{name:'platform',label:'Platform',type:'select',req:false,options:['TikTok','Instagram Reels','YouTube Shorts','All']}] },
-  { id: 'create_video', name: 'Create Video', desc: 'Generate a new video from a text prompt. Choose aspect ratio, duration, and style.', cmd: 'create_video', cat: 'generate-video', icon: '🎬', params: [{name:'prompt',label:'Prompt',type:'textarea',req:true,hint:'Describe the video you want to generate'},{name:'aspect_ratio',label:'Aspect Ratio',type:'select',req:false,options:['16:9','9:16','1:1','4:3'],hint:'Default: 16:9'},{name:'duration',label:'Duration (sec)',type:'number',req:false,hint:'1-10 seconds'},{name:'style',label:'Style',type:'text',req:false,hint:'e.g. cinematic, anime, photorealistic'}] },
-  { id: 'create_video_from_image', name: 'Video from Image', desc: 'Animate a still image into a video clip using Pika AI.', cmd: 'create_video_from_image', cat: 'generate-video', icon: '🎬', params: [{name:'image_url',label:'Image URL',type:'text',req:true,hint:'URL of the source image'},{name:'prompt',label:'Motion Prompt',type:'textarea',req:false,hint:'Describe the motion to apply'},{name:'duration',label:'Duration (sec)',type:'number',req:false,hint:'1-10 seconds'}] },
-  { id: 'create_video_from_video', name: 'Video from Video', desc: 'Transform or extend an existing video clip with new style or motion.', cmd: 'create_video_from_video', cat: 'generate-video', icon: '🎬', params: [{name:'video_url',label:'Video URL',type:'text',req:true,hint:'URL of the source video'},{name:'prompt',label:'Transform Prompt',type:'textarea',req:false,hint:'Describe the transformation to apply'}] },
-  { id: 'create_video_from_audio', name: 'Video from Audio', desc: 'Generate a video synchronized to an audio track.', cmd: 'create_video_from_audio', cat: 'generate-video', icon: '🎬', params: [{name:'audio_url',label:'Audio URL',type:'text',req:true,hint:'URL of the audio file'},{name:'prompt',label:'Visual Prompt',type:'textarea',req:false,hint:'Describe the visuals to generate'}] },
-  { id: 'text_to_video', name: 'Text to Video (v2)', desc: 'Latest text-to-video model with enhanced quality and motion control.', cmd: 'text_to_video', cat: 'generate-video', icon: '🎬', params: [{name:'prompt',label:'Prompt',type:'textarea',req:true,hint:'Detailed description of the video'},{name:'negative_prompt',label:'Negative Prompt',type:'text',req:false,hint:'What to avoid in the video'},{name:'seed',label:'Seed',type:'number',req:false,hint:'Reproducibility seed'}] },
-  { id: 'image_to_video', name: 'Image to Video (v2)', desc: 'Convert a static image into a dynamic video with advanced motion AI.', cmd: 'image_to_video', cat: 'generate-video', icon: '🎬', params: [{name:'image_url',label:'Image URL',type:'text',req:true,hint:'Source image URL'},{name:'prompt',label:'Prompt',type:'textarea',req:false,hint:'Motion description'},{name:'camera_motion',label:'Camera Motion',type:'select',req:false,options:['static','zoom_in','zoom_out','pan_left','pan_right','tilt_up','tilt_down','rotate_cw','rotate_ccw']}] },
-  { id: 'video_extend', name: 'Extend Video', desc: 'Extend the duration of an existing video clip seamlessly.', cmd: 'video_extend', cat: 'generate-video', icon: '🎬', params: [{name:'video_url',label:'Video URL',type:'text',req:true,hint:'URL of the video to extend'},{name:'prompt',label:'Extension Prompt',type:'textarea',req:false,hint:'Describe what happens next'},{name:'duration',label:'Extra Duration (sec)',type:'number',req:false}] },
-  { id: 'video_upscale', name: 'Upscale Video', desc: 'Enhance video resolution and quality using AI upscaling.', cmd: 'video_upscale', cat: 'generate-video', icon: '🎬', params: [{name:'video_url',label:'Video URL',type:'text',req:true,hint:'URL of the video to upscale'},{name:'scale',label:'Scale Factor',type:'select',req:false,options:['2x','4x']}] },
-  { id: 'generate_image', name: 'Generate Image', desc: 'Create high-quality images from text descriptions using Pika image AI.', cmd: 'generate_image', cat: 'image-music', icon: '🎨', params: [{name:'prompt',label:'Prompt',type:'textarea',req:true,hint:'Describe the image to generate'},{name:'style',label:'Style',type:'text',req:false,hint:'artistic style or reference'},{name:'aspect_ratio',label:'Aspect Ratio',type:'select',req:false,options:['1:1','16:9','9:16','3:2','2:3']},{name:'negative_prompt',label:'Negative Prompt',type:'text',req:false}] },
-  { id: 'image_upscale', name: 'Upscale Image', desc: 'Enhance image resolution with AI-powered upscaling.', cmd: 'image_upscale', cat: 'image-music', icon: '🎨', params: [{name:'image_url',label:'Image URL',type:'text',req:true},{name:'scale',label:'Scale',type:'select',req:false,options:['2x','4x']}] },
-  { id: 'generate_music', name: 'Generate Music', desc: 'Create original music tracks from text prompts with genre and mood control.', cmd: 'generate_music', cat: 'image-music', icon: '🎵', params: [{name:'prompt',label:'Music Prompt',type:'textarea',req:true,hint:'e.g. upbeat lo-fi hip hop, 120bpm'},{name:'duration',label:'Duration (sec)',type:'number',req:false,hint:'5-60 seconds'},{name:'genre',label:'Genre',type:'text',req:false},{name:'mood',label:'Mood',type:'text',req:false}] },
-  { id: 'music_video', name: 'Music Video', desc: 'Generate a full music video synced to an audio track.', cmd: 'music_video', cat: 'image-music', icon: '🎵', params: [{name:'audio_url',label:'Audio URL',type:'text',req:true},{name:'style',label:'Visual Style',type:'text',req:false},{name:'prompt',label:'Visual Prompt',type:'textarea',req:false}] },
-  { id: 'image_to_image', name: 'Image to Image', desc: 'Transform an existing image with a text prompt while preserving structure.', cmd: 'image_to_image', cat: 'image-music', icon: '🎨', params: [{name:'image_url',label:'Source Image URL',type:'text',req:true},{name:'prompt',label:'Transform Prompt',type:'textarea',req:true},{name:'strength',label:'Strength (0-1)',type:'number',req:false,hint:'How much to change the image'}] },
-  { id: 'pikaffects', name: 'Pikaffects', desc: 'Apply cinematic special effects to videos — explosions, melting, dissolve, and more.', cmd: 'pikaffects', cat: 'edit-effects', icon: '✨', params: [{name:'video_url',label:'Video URL',type:'text',req:true},{name:'effect',label:'Effect',type:'select',req:true,options:['explode','melt','crush','inflate','deflate','dissolve','fly','levitate','crumble','cake','ta-da','vortex','bounce','burst','squish','squash','zap','shrink','balloons','heart-balloon']},{name:'prompt',label:'Custom Prompt',type:'textarea',req:false}] },
-  { id: 'video_transition', name: 'Video Transition', desc: 'Create smooth transitions between two video clips.', cmd: 'video_transition', cat: 'edit-effects', icon: '✂️', params: [{name:'video_url_1',label:'Video 1 URL',type:'text',req:true},{name:'video_url_2',label:'Video 2 URL',type:'text',req:true},{name:'transition_type',label:'Transition',type:'select',req:false,options:['morph','fade','wipe','zoom']}] },
-  { id: 'add_text_overlay', name: 'Add Text Overlay', desc: 'Add animated text overlays and titles to your video.', cmd: 'add_text_overlay', cat: 'edit-effects', icon: '✂️', params: [{name:'video_url',label:'Video URL',type:'text',req:true},{name:'text',label:'Text',type:'text',req:true},{name:'position',label:'Position',type:'select',req:false,options:['top','center','bottom']},{name:'font_size',label:'Font Size',type:'number',req:false},{name:'color',label:'Color',type:'text',req:false,hint:'hex or color name'}] },
-  { id: 'video_watermark', name: 'Remove Watermark', desc: 'Remove watermarks and logos from video footage with AI inpainting.', cmd: 'video_watermark', cat: 'edit-effects', icon: '✂️', params: [{name:'video_url',label:'Video URL',type:'text',req:true},{name:'region',label:'Region',type:'text',req:false,hint:'x,y,width,height or describe location'}] },
-  { id: 'inpaint_video', name: 'Inpaint Video', desc: 'Replace or remove objects in a video using AI inpainting.', cmd: 'inpaint_video', cat: 'edit-effects', icon: '✂️', params: [{name:'video_url',label:'Video URL',type:'text',req:true},{name:'mask_url',label:'Mask URL',type:'text',req:false,hint:'White=inpaint, Black=keep'},{name:'prompt',label:'Replacement Prompt',type:'textarea',req:false}] },
-  { id: 'video_reframe', name: 'Reframe Video', desc: 'Intelligently reframe video to a new aspect ratio using smart crop.', cmd: 'video_reframe', cat: 'edit-effects', icon: '✂️', params: [{name:'video_url',label:'Video URL',type:'text',req:true},{name:'target_ratio',label:'Target Ratio',type:'select',req:true,options:['16:9','9:16','1:1','4:3']}] },
-  { id: 'background_removal', name: 'Remove Background', desc: 'Remove the background from a video or image automatically.', cmd: 'background_removal', cat: 'edit-effects', icon: '✂️', params: [{name:'url',label:'Video or Image URL',type:'text',req:true}] },
-  { id: 'outpaint_video', name: 'Outpaint Video', desc: 'Extend the frame boundaries of a video with AI-generated content.', cmd: 'outpaint_video', cat: 'edit-effects', icon: '✂️', params: [{name:'video_url',label:'Video URL',type:'text',req:true},{name:'direction',label:'Expand Direction',type:'select',req:false,options:['all','left','right','up','down']},{name:'scale',label:'Scale Factor',type:'number',req:false}] },
-  { id: 'video_color_grade', name: 'Color Grade', desc: 'Apply cinematic color grading to your video with preset LUTs.', cmd: 'video_color_grade', cat: 'edit-effects', icon: '✂️', params: [{name:'video_url',label:'Video URL',type:'text',req:true},{name:'style',label:'Grade Style',type:'select',req:false,options:['cinematic','vintage','neon','warm','cool','b&w','golden_hour']}] },
-  { id: 'video_stabilize', name: 'Stabilize Video', desc: 'Remove camera shake and stabilize shaky footage.', cmd: 'video_stabilize', cat: 'edit-effects', icon: '✂️', params: [{name:'video_url',label:'Video URL',type:'text',req:true},{name:'strength',label:'Stabilization Strength',type:'select',req:false,options:['low','medium','high']}] },
-  { id: 'slow_motion', name: 'Slow Motion', desc: 'Generate smooth slow-motion video with AI frame interpolation.', cmd: 'slow_motion', cat: 'edit-effects', icon: '✂️', params: [{name:'video_url',label:'Video URL',type:'text',req:true},{name:'factor',label:'Slow Factor',type:'select',req:false,options:['2x','4x','8x']}] },
-  { id: 'text_to_speech', name: 'Text to Speech', desc: 'Convert text to natural-sounding speech with hundreds of voice options.', cmd: 'text_to_speech', cat: 'voice-audio', icon: '🎙️', params: [{name:'text',label:'Text',type:'textarea',req:true,hint:'Text to convert to speech'},{name:'voice',label:'Voice ID',type:'text',req:false,hint:'Voice name or ID'},{name:'speed',label:'Speed',type:'number',req:false,hint:'0.5 - 2.0, default 1.0'},{name:'language',label:'Language',type:'text',req:false,hint:'e.g. en-US, es-ES'}] },
-  { id: 'voice_clone', name: 'Voice Clone', desc: 'Clone a voice from a sample audio file for custom TTS.', cmd: 'voice_clone', cat: 'voice-audio', icon: '🎙️', params: [{name:'audio_url',label:'Sample Audio URL',type:'text',req:true,hint:'5-30 seconds of clean voice audio'},{name:'name',label:'Voice Name',type:'text',req:true,hint:'Name for this cloned voice'}] },
-  { id: 'voice_changer', name: 'Voice Changer', desc: 'Transform the voice in an audio or video file.', cmd: 'voice_changer', cat: 'voice-audio', icon: '🎙️', params: [{name:'url',label:'Audio/Video URL',type:'text',req:true},{name:'target_voice',label:'Target Voice',type:'text',req:false,hint:'Voice ID or description'}] },
-  { id: 'lip_sync', name: 'Lip Sync', desc: "Sync a character's lip movements to an audio track automatically.", cmd: 'lip_sync', cat: 'voice-audio', icon: '🎙️', params: [{name:'video_url',label:'Video URL',type:'text',req:true},{name:'audio_url',label:'Audio URL',type:'text',req:true,hint:'New audio to sync lips to'}] },
-  { id: 'dubbing', name: 'Dubbing', desc: 'Dub a video into a different language with lip sync.', cmd: 'dubbing', cat: 'voice-audio', icon: '🎙️', params: [{name:'video_url',label:'Video URL',type:'text',req:true},{name:'target_language',label:'Target Language',type:'text',req:true,hint:'e.g. Spanish, French, Japanese'},{name:'voice',label:'Voice Style',type:'text',req:false}] },
-  { id: 'audio_cleanup', name: 'Audio Cleanup', desc: 'Remove background noise and enhance audio clarity.', cmd: 'audio_cleanup', cat: 'voice-audio', icon: '🎙️', params: [{name:'url',label:'Audio/Video URL',type:'text',req:true},{name:'level',label:'Cleanup Level',type:'select',req:false,options:['light','medium','aggressive']}] },
-  { id: 'sound_effects', name: 'Sound Effects', desc: 'Generate custom sound effects from text descriptions.', cmd: 'sound_effects', cat: 'voice-audio', icon: '🎙️', params: [{name:'prompt',label:'Sound Effect Prompt',type:'textarea',req:true,hint:'e.g. distant thunder with rain'},{name:'duration',label:'Duration (sec)',type:'number',req:false}] },
-  { id: 'add_audio_to_video', name: 'Add Audio to Video', desc: 'Merge an audio track with a video file.', cmd: 'add_audio_to_video', cat: 'voice-audio', icon: '🎙️', params: [{name:'video_url',label:'Video URL',type:'text',req:true},{name:'audio_url',label:'Audio URL',type:'text',req:true},{name:'mix_volume',label:'Mix Volume (0-1)',type:'number',req:false}] },
-  { id: 'face_swap', name: 'Face Swap', desc: 'Swap faces between source and target images or videos.', cmd: 'face_swap', cat: 'identity', icon: '👤', params: [{name:'source_url',label:'Source Face URL',type:'text',req:true,hint:'Image with the face to use'},{name:'target_url',label:'Target URL',type:'text',req:true,hint:'Image or video to swap face into'}] },
-  { id: 'face_enhance', name: 'Face Enhance', desc: 'Restore, enhance, and sharpen faces in images and videos.', cmd: 'face_enhance', cat: 'identity', icon: '👤', params: [{name:'url',label:'Image/Video URL',type:'text',req:true},{name:'strength',label:'Enhancement Strength',type:'select',req:false,options:['light','medium','strong']}] },
-  { id: 'avatar_generate', name: 'Generate Avatar', desc: 'Create a custom AI avatar from a photo reference.', cmd: 'avatar_generate', cat: 'identity', icon: '👤', params: [{name:'reference_url',label:'Reference Image URL',type:'text',req:true},{name:'style',label:'Avatar Style',type:'text',req:false,hint:'e.g. 3D cartoon, anime, realistic'},{name:'prompt',label:'Additional Prompt',type:'textarea',req:false}] },
-  { id: 'virtual_tryon', name: 'Virtual Try-On', desc: 'Digitally dress a model in clothing items.', cmd: 'virtual_tryon', cat: 'identity', icon: '👤', params: [{name:'model_url',label:'Model Image URL',type:'text',req:true},{name:'garment_url',label:'Garment Image URL',type:'text',req:true}] },
-  { id: 'age_transform', name: 'Age Transform', desc: 'Make a person look younger or older in a photo or video.', cmd: 'age_transform', cat: 'identity', icon: '👤', params: [{name:'url',label:'Image/Video URL',type:'text',req:true},{name:'target_age',label:'Target Age',type:'number',req:false,hint:'Approximate age in years'},{name:'direction',label:'Direction',type:'select',req:false,options:['younger','older']}] },
-  { id: 'get_job_status', name: 'Get Job Status', desc: 'Poll the status of any Pika generation job by ID.', cmd: 'get_job_status', cat: 'utilities', icon: '🔧', params: [{name:'job_id',label:'Job ID',type:'text',req:true,hint:'The job ID returned from a generation request'}] },
-  { id: 'get_video_info', name: 'Get Video Info', desc: 'Retrieve metadata and details about a Pika video asset.', cmd: 'get_video_info', cat: 'utilities', icon: '🔧', params: [{name:'video_id',label:'Video ID or URL',type:'text',req:true}] },
-  { id: 'list_jobs', name: 'List Jobs', desc: 'List all recent generation jobs with status and output URLs.', cmd: 'list_jobs', cat: 'utilities', icon: '🔧', params: [{name:'limit',label:'Limit',type:'number',req:false,hint:'Max results (default 20)'},{name:'status',label:'Filter by Status',type:'select',req:false,options:['all','pending','processing','completed','failed']}] },
-  { id: 'delete_asset', name: 'Delete Asset', desc: 'Delete a Pika asset (video, image, or audio) by ID.', cmd: 'delete_asset', cat: 'utilities', icon: '🔧', params: [{name:'asset_id',label:'Asset ID',type:'text',req:true}] },
-  { id: 'get_account_info', name: 'Account Info', desc: 'Get your Pika account details, credit balance, and quota.', cmd: 'get_account_info', cat: 'utilities', icon: '🔧', params: [] },
-  { id: 'list_models', name: 'List Models', desc: 'List all available Pika generation models and their capabilities.', cmd: 'list_models', cat: 'utilities', icon: '🔧', params: [] },
-  { id: 'health_check', name: 'Health Check', desc: 'Verify the Pika MCP server connection and API status.', cmd: 'health_check', cat: 'utilities', icon: '🔧', params: [] },
-  { id: 'list_effects', name: 'List Effects', desc: 'Get a full list of available Pikaffects with descriptions.', cmd: 'list_effects', cat: 'utilities', icon: '🔧', params: [] }
+  // SKILLS
+  {
+    id:'skill_podcast', name:'Podcast Skill', cat:'skills', badge:'skill', icon:'🎙️', cmd:'/pika:podcast',
+    desc:'Two-host AI podcast video from any topic or URL. Fully autonomous.',
+    explainer:'<strong>Just give Pika a topic or URL.</strong> It writes the script, generates two AI hosts, voices them with realistic speech, and edits a full ~1 minute two-host conversation video with 4 acts (~15 sec each). You only need to provide the subject.',
+    params:[{name:'input',label:'Topic or URL',type:'textarea',req:true,hint:'Topic, brief, or HTTPS URL — what should the podcast be about?'}],
+    optionalParams:[
+      {name:'bg_img',label:'Studio Background Image URL',type:'text',hint:'Hosted HTTPS image — auto-generated if omitted'},
+      {name:'host_a_img',label:'Host A Portrait URL',type:'text',hint:'Left host — auto-generated if omitted'},
+      {name:'host_b_img',label:'Host B Portrait URL',type:'text',hint:'Right host — auto-generated if omitted'},
+      {name:'aspect_ratio',label:'Aspect Ratio',type:'select',options:['16:9','9:16','1:1'],hint:'Default: 16:9'}
+    ],
+    attachNote:'Want custom host portraits or a background? Drag images into your Claude Code terminal after running the command, or paste hosted image URLs in the optional fields above.',
+    cmdFn:function(a){
+      var p=a.input?'input="'+a.input+'"':'';
+      var opts=['bg_img','host_a_img','host_b_img','aspect_ratio'].filter(function(k){return a[k];}).map(function(k){return k+'="'+a[k]+'"';}).join(' ');
+      return ('/pika:podcast '+(p?p+' ':'')+opts).trim();
+    }
+  },
+  {
+    id:'skill_explainer', name:'Explainer Skill', cat:'skills', badge:'skill', icon:'🎬', cmd:'/pika:explainer',
+    desc:'65–80 sec explainer video with avatar lipsync from any URL.',
+    explainer:'<strong>Give Pika a URL — GitHub repo, product page, docs, or launch page.</strong> It captures the live site, writes a narration script, animates an avatar presenter with lipsync, adds macOS browser chrome and zoom effects, and renders a 65–80 second polished explainer video. You just need the URL.',
+    params:[{name:'url',label:'Page URL',type:'text',req:true,hint:'HTTPS URL of the page to explain (GitHub repo, product page, docs…)'}],
+    optionalParams:[
+      {name:'focus',label:'Narration Focus',type:'textarea',hint:'Editorial angles or key points to emphasize'},
+      {name:'avatar',label:'Presenter Image URL',type:'text',hint:'Custom avatar — uses default if omitted'},
+      {name:'voice',label:'Voice ID',type:'text',hint:'MiniMax voice identifier'},
+      {name:'live_url',label:'Live Demo URL',type:'text',hint:'Force a specific live URL (GitHub mode only)'},
+      {name:'lipsync_provider',label:'Lipsync Engine',type:'select',options:['pika','kling'],hint:'Default: pika'},
+      {name:'no_captions',label:'Omit captions',type:'checkbox',hint:'Suppress subtitle burn-in'},
+      {name:'preview',label:'Preview mode only',type:'checkbox',hint:'3-sec lipsync sanity check before full render'}
+    ],
+    attachNote:'Custom presenter avatar? Drag your image into the Claude Code terminal after running, or paste a hosted HTTPS image URL in the optional field above.',
+    cmdFn:function(a){
+      var flags=[];
+      if(a.focus)flags.push('--focus "'+a.focus+'"');
+      if(a.avatar)flags.push('--avatar '+a.avatar);
+      if(a.voice)flags.push('--voice '+a.voice);
+      if(a.live_url)flags.push('--live-url '+a.live_url);
+      if(a.lipsync_provider)flags.push('--lipsync-provider '+a.lipsync_provider);
+      if(a.no_captions)flags.push('--no-captions');
+      if(a.preview)flags.push('--preview');
+      return ('/pika:explainer '+(a.url||'')+(flags.length?' '+flags.join(' '):'')).trim();
+    }
+  },
+  {
+    id:'skill_ugc', name:'UGC Ads Skill', cat:'skills', badge:'skill', icon:'📱', cmd:'/pika:ugc-ads',
+    desc:'15-sec vertical UGC-style ad from a product URL. 6–12 min runtime.',
+    explainer:'<strong>Give Pika a product URL.</strong> It auto-detects the product category (HAUL, APP, FOOD, BEAUTY, FITNESS, TECH), builds a 5-act creator narrative (set → name → reveal → twist → punchline), and renders a 15-second 9:16 vertical ad that feels like authentic creator content. Runtime: 6–12 minutes end-to-end.',
+    params:[{name:'url',label:'Product URL',type:'text',req:true,hint:'Product page URL — drives category detection and narrative logic'}],
+    optionalParams:[
+      {name:'avatar_url',label:'Creator Persona Image URL',type:'text',hint:'Talking-head avatar — uses fallback if omitted'},
+      {name:'category',label:'Product Category',type:'select',options:['Auto-detect','HAUL','APP','FOOD','BEAUTY','FITNESS','TECH']},
+      {name:'aspect_ratio',label:'Aspect Ratio',type:'select',options:['9:16','3:4'],hint:'Default: 9:16 (vertical)'},
+      {name:'provider',label:'Engine',type:'select',options:['seedance','kling'],hint:'Default: seedance'},
+      {name:'captions',label:'Include captions',type:'checkbox',hint:'Burn-in captions (default: on)',defaultChecked:true}
+    ],
+    attachNote:'Custom creator avatar? Drag your image into the Claude Code terminal after running, or paste a hosted HTTPS image URL in the optional field above.',
+    cmdFn:function(a){
+      var parts=['url="'+(a.url||'')+'"'];
+      if(a.avatar_url)parts.push('avatar_url="'+a.avatar_url+'"');
+      if(a.category&&a.category!=='Auto-detect')parts.push('category="'+a.category+'"');
+      if(a.aspect_ratio)parts.push('aspect_ratio="'+a.aspect_ratio+'"');
+      if(a.provider)parts.push('provider="'+a.provider+'"');
+      if(a.captions===false)parts.push('captions="false"');
+      return '/pika:ugc-ads '+parts.join(' ');
+    }
+  },
+  // GENERATE VIDEO
+  {id:'create_video',name:'Create Video',cat:'generate-video',icon:'🎬',desc:'Generate a new video from a text prompt.',params:[{name:'prompt',label:'Prompt',type:'textarea',req:true,hint:'Describe the video'},{name:'aspect_ratio',label:'Aspect Ratio',type:'select',options:['16:9','9:16','1:1','4:3'],hint:'Default: 16:9'},{name:'duration',label:'Duration (sec)',type:'number',hint:'1–10 seconds'},{name:'style',label:'Style',type:'text',hint:'e.g. cinematic, anime'}]},
+  {id:'create_video_from_image',name:'Video from Image',cat:'generate-video',icon:'🎬',desc:'Animate a still image into a video clip.',params:[{name:'image_url',label:'Image URL',type:'text',req:true},{name:'prompt',label:'Motion Prompt',type:'textarea',hint:'Describe the motion'},{name:'duration',label:'Duration (sec)',type:'number',hint:'1–10 seconds'}]},
+  {id:'create_video_from_video',name:'Video from Video',cat:'generate-video',icon:'🎬',desc:'Transform or extend an existing video with new style or motion.',params:[{name:'video_url',label:'Video URL',type:'text',req:true},{name:'prompt',label:'Transform Prompt',type:'textarea'}]},
+  {id:'create_video_from_audio',name:'Video from Audio',cat:'generate-video',icon:'🎬',desc:'Generate a video synchronized to an audio track.',params:[{name:'audio_url',label:'Audio URL',type:'text',req:true},{name:'prompt',label:'Visual Prompt',type:'textarea'}]},
+  {id:'text_to_video',name:'Text to Video (v2)',cat:'generate-video',icon:'🎬',desc:'Latest text-to-video model with enhanced quality.',params:[{name:'prompt',label:'Prompt',type:'textarea',req:true},{name:'negative_prompt',label:'Negative Prompt',type:'text'},{name:'seed',label:'Seed',type:'number'}]},
+  {id:'image_to_video',name:'Image to Video (v2)',cat:'generate-video',icon:'🎬',desc:'Convert a static image to dynamic video with advanced motion AI.',params:[{name:'image_url',label:'Image URL',type:'text',req:true},{name:'prompt',label:'Prompt',type:'textarea'},{name:'camera_motion',label:'Camera Motion',type:'select',options:['static','zoom_in','zoom_out','pan_left','pan_right','tilt_up','tilt_down','rotate_cw','rotate_ccw']}]},
+  {id:'video_extend',name:'Extend Video',cat:'generate-video',icon:'🎬',desc:'Extend the duration of an existing video clip seamlessly.',params:[{name:'video_url',label:'Video URL',type:'text',req:true},{name:'prompt',label:'Extension Prompt',type:'textarea'},{name:'duration',label:'Extra Duration (sec)',type:'number'}]},
+  {id:'video_upscale',name:'Upscale Video',cat:'generate-video',icon:'🎬',desc:'Enhance video resolution using AI upscaling.',params:[{name:'video_url',label:'Video URL',type:'text',req:true},{name:'scale',label:'Scale',type:'select',options:['2x','4x']}]},
+  // IMAGE & MUSIC
+  {id:'generate_image',name:'Generate Image',cat:'image-music',icon:'🎨',desc:'Create high-quality images from text descriptions.',params:[{name:'prompt',label:'Prompt',type:'textarea',req:true},{name:'style',label:'Style',type:'text'},{name:'aspect_ratio',label:'Aspect Ratio',type:'select',options:['1:1','16:9','9:16','3:2','2:3']},{name:'negative_prompt',label:'Negative Prompt',type:'text'}]},
+  {id:'image_upscale',name:'Upscale Image',cat:'image-music',icon:'🎨',desc:'Enhance image resolution with AI-powered upscaling.',params:[{name:'image_url',label:'Image URL',type:'text',req:true},{name:'scale',label:'Scale',type:'select',options:['2x','4x']}]},
+  {id:'generate_music',name:'Generate Music',cat:'image-music',icon:'🎵',desc:'Create original music tracks from text prompts.',params:[{name:'prompt',label:'Music Prompt',type:'textarea',req:true,hint:'e.g. upbeat lo-fi hip hop'},{name:'duration',label:'Duration (sec)',type:'number',hint:'5–60 seconds'},{name:'genre',label:'Genre',type:'text'},{name:'mood',label:'Mood',type:'text'}]},
+  {id:'music_video',name:'Music Video',cat:'image-music',icon:'🎵',desc:'Generate a full music video synced to an audio track.',params:[{name:'audio_url',label:'Audio URL',type:'text',req:true},{name:'style',label:'Visual Style',type:'text'},{name:'prompt',label:'Visual Prompt',type:'textarea'}]},
+  {id:'image_to_image',name:'Image to Image',cat:'image-music',icon:'🎨',desc:'Transform an image with a text prompt while preserving structure.',params:[{name:'image_url',label:'Source Image URL',type:'text',req:true},{name:'prompt',label:'Transform Prompt',type:'textarea',req:true},{name:'strength',label:'Strength (0–1)',type:'number'}]},
+  // EDIT & EFFECTS
+  {id:'pikaffects',name:'Pikaffects',cat:'edit-effects',icon:'✨',desc:'Apply cinematic special effects to videos.',params:[{name:'video_url',label:'Video URL',type:'text',req:true},{name:'effect',label:'Effect',type:'select',req:true,options:['explode','melt','crush','inflate','deflate','dissolve','fly','levitate','crumble','cake','ta-da','vortex','bounce','burst','squish','squash','zap','shrink','balloons','heart-balloon']},{name:'prompt',label:'Custom Prompt',type:'textarea'}]},
+  {id:'video_transition',name:'Video Transition',cat:'edit-effects',icon:'✂️',desc:'Create smooth transitions between two video clips.',params:[{name:'video_url_1',label:'Video 1 URL',type:'text',req:true},{name:'video_url_2',label:'Video 2 URL',type:'text',req:true},{name:'transition_type',label:'Transition',type:'select',options:['morph','fade','wipe','zoom']}]},
+  {id:'add_text_overlay',name:'Add Text Overlay',cat:'edit-effects',icon:'✂️',desc:'Add animated text overlays and titles to video.',params:[{name:'video_url',label:'Video URL',type:'text',req:true},{name:'text',label:'Text',type:'text',req:true},{name:'position',label:'Position',type:'select',options:['top','center','bottom']},{name:'font_size',label:'Font Size',type:'number'},{name:'color',label:'Color',type:'text',hint:'hex or name'}]},
+  {id:'video_watermark',name:'Remove Watermark',cat:'edit-effects',icon:'✂️',desc:'Remove watermarks and logos from video with AI inpainting.',params:[{name:'video_url',label:'Video URL',type:'text',req:true},{name:'region',label:'Region',type:'text',hint:'x,y,w,h or describe location'}]},
+  {id:'inpaint_video',name:'Inpaint Video',cat:'edit-effects',icon:'✂️',desc:'Replace or remove objects in a video using AI inpainting.',params:[{name:'video_url',label:'Video URL',type:'text',req:true},{name:'mask_url',label:'Mask URL',type:'text'},{name:'prompt',label:'Replacement Prompt',type:'textarea'}]},
+  {id:'video_reframe',name:'Reframe Video',cat:'edit-effects',icon:'✂️',desc:'Intelligently reframe video to a new aspect ratio.',params:[{name:'video_url',label:'Video URL',type:'text',req:true},{name:'target_ratio',label:'Target Ratio',type:'select',req:true,options:['16:9','9:16','1:1','4:3']}]},
+  {id:'background_removal',name:'Remove Background',cat:'edit-effects',icon:'✂️',desc:'Remove the background from a video or image automatically.',params:[{name:'url',label:'Video or Image URL',type:'text',req:true}]},
+  {id:'outpaint_video',name:'Outpaint Video',cat:'edit-effects',icon:'✂️',desc:'Extend the frame boundaries of a video with AI-generated content.',params:[{name:'video_url',label:'Video URL',type:'text',req:true},{name:'direction',label:'Expand Direction',type:'select',options:['all','left','right','up','down']},{name:'scale',label:'Scale Factor',type:'number'}]},
+  {id:'video_color_grade',name:'Color Grade',cat:'edit-effects',icon:'✂️',desc:'Apply cinematic color grading to your video.',params:[{name:'video_url',label:'Video URL',type:'text',req:true},{name:'style',label:'Grade Style',type:'select',options:['cinematic','vintage','neon','warm','cool','b&w','golden_hour']}]},
+  {id:'video_stabilize',name:'Stabilize Video',cat:'edit-effects',icon:'✂️',desc:'Remove camera shake and stabilize shaky footage.',params:[{name:'video_url',label:'Video URL',type:'text',req:true},{name:'strength',label:'Strength',type:'select',options:['low','medium','high']}]},
+  {id:'slow_motion',name:'Slow Motion',cat:'edit-effects',icon:'✂️',desc:'Generate smooth slow-motion with AI frame interpolation.',params:[{name:'video_url',label:'Video URL',type:'text',req:true},{name:'factor',label:'Slow Factor',type:'select',options:['2x','4x','8x']}]},
+  // VOICE & AUDIO
+  {id:'text_to_speech',name:'Text to Speech',cat:'voice-audio',icon:'🎙️',desc:'Convert text to natural-sounding speech.',params:[{name:'text',label:'Text',type:'textarea',req:true},{name:'voice',label:'Voice ID',type:'text'},{name:'speed',label:'Speed',type:'number',hint:'0.5–2.0'},{name:'language',label:'Language',type:'text',hint:'e.g. en-US'}]},
+  {id:'voice_clone',name:'Voice Clone',cat:'voice-audio',icon:'🎙️',desc:'Clone a voice from a sample audio file for custom TTS.',params:[{name:'audio_url',label:'Sample Audio URL',type:'text',req:true,hint:'5–30 sec clean voice audio'},{name:'name',label:'Voice Name',type:'text',req:true}]},
+  {id:'voice_changer',name:'Voice Changer',cat:'voice-audio',icon:'🎙️',desc:'Transform the voice in an audio or video file.',params:[{name:'url',label:'Audio/Video URL',type:'text',req:true},{name:'target_voice',label:'Target Voice',type:'text'}]},
+  {id:'lip_sync',name:'Lip Sync',cat:'voice-audio',icon:'🎙️',desc:"Sync a character's lip movements to a new audio track.",params:[{name:'video_url',label:'Video URL',type:'text',req:true},{name:'audio_url',label:'Audio URL',type:'text',req:true}]},
+  {id:'dubbing',name:'Dubbing',cat:'voice-audio',icon:'🎙️',desc:'Dub a video into a different language with lip sync.',params:[{name:'video_url',label:'Video URL',type:'text',req:true},{name:'target_language',label:'Target Language',type:'text',req:true,hint:'e.g. Spanish, French'},{name:'voice',label:'Voice Style',type:'text'}]},
+  {id:'audio_cleanup',name:'Audio Cleanup',cat:'voice-audio',icon:'🎙️',desc:'Remove background noise and enhance audio clarity.',params:[{name:'url',label:'Audio/Video URL',type:'text',req:true},{name:'level',label:'Level',type:'select',options:['light','medium','aggressive']}]},
+  {id:'sound_effects',name:'Sound Effects',cat:'voice-audio',icon:'🎙️',desc:'Generate custom sound effects from text descriptions.',params:[{name:'prompt',label:'Prompt',type:'textarea',req:true,hint:'e.g. distant thunder with rain'},{name:'duration',label:'Duration (sec)',type:'number'}]},
+  {id:'add_audio_to_video',name:'Add Audio to Video',cat:'voice-audio',icon:'🎙️',desc:'Merge an audio track with a video file.',params:[{name:'video_url',label:'Video URL',type:'text',req:true},{name:'audio_url',label:'Audio URL',type:'text',req:true},{name:'mix_volume',label:'Mix Volume (0–1)',type:'number'}]},
+  // IDENTITY
+  {id:'face_swap',name:'Face Swap',cat:'identity',icon:'👤',desc:'Swap faces between source and target images or videos.',params:[{name:'source_url',label:'Source Face URL',type:'text',req:true},{name:'target_url',label:'Target URL',type:'text',req:true}]},
+  {id:'face_enhance',name:'Face Enhance',cat:'identity',icon:'👤',desc:'Restore, enhance, and sharpen faces in images and videos.',params:[{name:'url',label:'Image/Video URL',type:'text',req:true},{name:'strength',label:'Strength',type:'select',options:['light','medium','strong']}]},
+  {id:'avatar_generate',name:'Generate Avatar',cat:'identity',icon:'👤',desc:'Create a custom AI avatar from a photo reference.',params:[{name:'reference_url',label:'Reference Image URL',type:'text',req:true},{name:'style',label:'Avatar Style',type:'text',hint:'e.g. 3D cartoon, anime'},{name:'prompt',label:'Additional Prompt',type:'textarea'}]},
+  {id:'virtual_tryon',name:'Virtual Try-On',cat:'identity',icon:'👤',desc:'Digitally dress a model in clothing items.',params:[{name:'model_url',label:'Model Image URL',type:'text',req:true},{name:'garment_url',label:'Garment Image URL',type:'text',req:true}]},
+  {id:'age_transform',name:'Age Transform',cat:'identity',icon:'👤',desc:'Make a person look younger or older.',params:[{name:'url',label:'Image/Video URL',type:'text',req:true},{name:'target_age',label:'Target Age',type:'number'},{name:'direction',label:'Direction',type:'select',options:['younger','older']}]},
+  // UTILITIES
+  {id:'get_job_status',name:'Get Job Status',cat:'utilities',icon:'🔧',desc:'Poll the status of any Pika generation job by ID.',params:[{name:'job_id',label:'Job ID',type:'text',req:true}]},
+  {id:'get_video_info',name:'Get Video Info',cat:'utilities',icon:'🔧',desc:'Retrieve metadata about a Pika video asset.',params:[{name:'video_id',label:'Video ID or URL',type:'text',req:true}]},
+  {id:'list_jobs',name:'List Jobs',cat:'utilities',icon:'🔧',desc:'List all recent generation jobs with status and output URLs.',params:[{name:'limit',label:'Limit',type:'number',hint:'Default 20'},{name:'status',label:'Filter by Status',type:'select',options:['all','pending','processing','completed','failed']}]},
+  {id:'delete_asset',name:'Delete Asset',cat:'utilities',icon:'🔧',desc:'Delete a Pika asset (video, image, or audio) by ID.',params:[{name:'asset_id',label:'Asset ID',type:'text',req:true}]},
+  {id:'get_account_info',name:'Account Info',cat:'utilities',icon:'🔧',desc:'Get your Pika account details, credit balance, and quota.',params:[]},
+  {id:'list_models',name:'List Models',cat:'utilities',icon:'🔧',desc:'List all available Pika generation models.',params:[]},
+  {id:'health_check',name:'Health Check',cat:'utilities',icon:'🔧',desc:'Verify the Pika MCP server connection and API status.',params:[]},
+  {id:'list_effects',name:'List Effects',cat:'utilities',icon:'🔧',desc:'Get a full list of available Pikaffects with descriptions.',params:[]}
 ];
 
-const CAT_ORDER = ['skills','generate-video','image-music','edit-effects','voice-audio','identity','utilities'];
-const CAT_META = {
-  'skills':         { icon: '⚡', title: 'Skills', isSkills: true },
-  'generate-video': { icon: '🎬', title: 'Generate Video' },
-  'image-music':    { icon: '🎨', title: 'Image & Music' },
-  'edit-effects':   { icon: '✂️', title: 'Edit & Effects' },
-  'voice-audio':    { icon: '🎙️', title: 'Voice & Audio' },
-  'identity':       { icon: '👤', title: 'Identity' },
-  'utilities':      { icon: '🔧', title: 'Utilities' }
+const CAT_ORDER=['skills','generate-video','image-music','edit-effects','voice-audio','identity','utilities'];
+const CAT_META={
+  'skills':{icon:'⚡',title:'Skills',isSkills:true},
+  'generate-video':{icon:'🎬',title:'Generate Video'},
+  'image-music':{icon:'🎨',title:'Image & Music'},
+  'edit-effects':{icon:'✂️',title:'Edit & Effects'},
+  'voice-audio':{icon:'🎙️',title:'Voice & Audio'},
+  'identity':{icon:'👤',title:'Identity'},
+  'utilities':{icon:'🔧',title:'Utilities'}
 };
 
-let currentTool = null;
-let searchIdx = -1;
+var currentTool=null,searchIdx=-1;
 
-function renderGrid() {
-  const grid = document.getElementById('tool-grid');
-  grid.innerHTML = '';
-  CAT_ORDER.forEach((cat, i) => {
-    const tools = TOOLS.filter(t => t.cat === cat);
-    if (!tools.length) return;
-    const m = CAT_META[cat];
-    const sec = document.createElement('div');
-    sec.className = 'cat-section' + (m.isSkills ? ' is-skills' : '') + (i === 0 ? ' open' : '');
-    sec.dataset.cat = cat;
-    const skillsBadge = m.isSkills ? '<span class="cat-badge-new">✨ NEW</span>' : '';
-    sec.innerHTML = `
-      <button class="cat-toggle" onclick="toggleSection(this.parentElement)" aria-expanded="${i === 0}">
-        <span class="cat-icon">${m.icon}</span>
-        <span class="cat-title">${m.title}</span>
-        ${skillsBadge}
-        <span class="cat-count">${tools.length}</span>
-        <span class="chevron">▾</span>
-      </button>
-      <div class="cat-body">
-        ${m.isSkills ? skillsFeaturedHTML(tools) : cardsGridHTML(tools)}
-      </div>
-    `;
+function renderGrid(){
+  var grid=document.getElementById('tool-grid');
+  grid.textContent='';
+  CAT_ORDER.forEach(function(cat,i){
+    var tools=TOOLS.filter(function(t){return t.cat===cat;});
+    if(!tools.length)return;
+    var m=CAT_META[cat];
+    var sec=document.createElement('div');
+    sec.className='cat-section'+(m.isSkills?' is-skills':'')+(i===0?' open':'');
+    sec.dataset.cat=cat;
+
+    var toggle=document.createElement('button');
+    toggle.className='cat-toggle';
+    toggle.setAttribute('aria-expanded',i===0?'true':'false');
+    toggle.onclick=function(){toggleSec(sec);};
+    toggle.innerHTML=
+      '<span class="cat-icon">'+m.icon+'</span>'+
+      '<span class="cat-title">'+m.title+'</span>'+
+      (m.isSkills?'<span class="cat-new">&#10022; NEW</span>':'')+
+      '<span class="cat-count">'+tools.length+'</span>'+
+      '<span class="chevron">&#9662;</span>';
+    sec.appendChild(toggle);
+
+    var body=document.createElement('div');
+    body.className='cat-body';
+    if(m.isSkills){body.appendChild(buildSkillsStrip(tools));}
+    else{body.appendChild(buildCardsGrid(tools));}
+    sec.appendChild(body);
     grid.appendChild(sec);
   });
 }
 
-function skillsFeaturedHTML(tools) {
-  return `<div class="skills-strip">${tools.map(t => `
-    <div class="skill-featured" onclick="openModal('${t.id}')">
-      <div class="sf-icon">${t.icon}</div>
-      <div class="sf-title">${t.name}</div>
-      <div class="sf-desc">${t.desc}</div>
-      <div class="sf-cmd">${t.cmd}</div>
-      <button class="sf-run" onclick="event.stopPropagation();openModal('${t.id}')">▶ Run Skill</button>
-    </div>`).join('')}</div>`;
+function buildSkillsStrip(tools){
+  var strip=document.createElement('div');
+  strip.className='skills-strip';
+  tools.forEach(function(t){
+    var card=document.createElement('div');
+    card.className='skill-card';
+    card.onclick=function(){openModal(t.id);};
+    card.innerHTML=
+      '<span class="skill-icon">'+t.icon+'</span>'+
+      '<div class="skill-name">'+t.name+'</div>'+
+      '<div class="skill-desc">'+t.desc+'</div>'+
+      '<div class="skill-cmd">'+t.cmd+'</div>';
+    var btn=document.createElement('button');
+    btn.className='skill-run';
+    btn.textContent='▶ Run Skill';
+    btn.onclick=function(e){e.stopPropagation();openModal(t.id);};
+    card.appendChild(btn);
+    strip.appendChild(card);
+  });
+  return strip;
 }
 
-function cardsGridHTML(tools) {
-  return `<div class="cards-grid">${tools.map(t => {
-    const badge = (t.badge === 'skill') ? '<span class="card-badge badge-skill">SKILL</span>' : '<span class="card-badge badge-tool">TOOL</span>';
-    return `<div class="card" onclick="openModal('${t.id}')">
-      <div class="card-header"><span class="card-title">${t.icon} ${t.name}</span>${badge}</div>
-      <div class="card-desc">${t.desc}</div>
-      <div class="card-footer">
-        <span class="card-cmd">${t.cmd}</span>
-        <button class="run-btn" onclick="event.stopPropagation();openModal('${t.id}')">▶ Run</button>
-      </div>
-    </div>`;
-  }).join('')}</div>`;
+function buildCardsGrid(tools){
+  var grid=document.createElement('div');
+  grid.className='cards-grid';
+  tools.forEach(function(t){
+    var card=document.createElement('div');
+    card.className='card';
+    card.onclick=function(){openModal(t.id);};
+    var badgeClass=t.badge==='skill'?'badge badge-skill':'badge badge-tool';
+    var badgeText=t.badge==='skill'?'SKILL':'TOOL';
+    var top=document.createElement('div');top.className='card-top';
+    var nameEl=document.createElement('span');nameEl.className='card-name';nameEl.textContent=t.icon+' '+t.name;
+    var badgeEl=document.createElement('span');badgeEl.className=badgeClass;badgeEl.textContent=badgeText;
+    top.appendChild(nameEl);top.appendChild(badgeEl);
+    var desc=document.createElement('div');desc.className='card-desc';desc.textContent=t.desc;
+    var footer=document.createElement('div');footer.className='card-footer';
+    var cmd=document.createElement('span');cmd.className='card-cmd';cmd.textContent=t.cmd||t.id;
+    var runBtn=document.createElement('button');runBtn.className='run-btn';runBtn.textContent='▶ Run';
+    runBtn.onclick=function(e){e.stopPropagation();openModal(t.id);};
+    footer.appendChild(cmd);footer.appendChild(runBtn);
+    card.appendChild(top);card.appendChild(desc);card.appendChild(footer);
+    grid.appendChild(card);
+  });
+  return grid;
 }
 
-function toggleSection(sec) {
-  const isOpen = sec.classList.contains('open');
-  sec.classList.toggle('open', !isOpen);
-  sec.querySelector('.cat-toggle').setAttribute('aria-expanded', String(!isOpen));
+function toggleSec(sec){
+  var open=sec.classList.toggle('open');
+  sec.querySelector('.cat-toggle').setAttribute('aria-expanded',open?'true':'false');
 }
-
-function expandAll(btn) {
-  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+function expandAll(btn){
+  document.querySelectorAll('.pill').forEach(function(p){p.classList.remove('active');});
   btn.classList.add('active');
-  document.querySelectorAll('.cat-section').forEach(s => { s.classList.add('open'); s.querySelector('.cat-toggle').setAttribute('aria-expanded', 'true'); });
+  document.querySelectorAll('.cat-section').forEach(function(s){s.classList.add('open');s.querySelector('.cat-toggle').setAttribute('aria-expanded','true');});
 }
-
-function collapseAll(btn) {
-  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+function collapseAll(btn){
+  document.querySelectorAll('.pill').forEach(function(p){p.classList.remove('active');});
   btn.classList.add('active');
-  document.querySelectorAll('.cat-section').forEach(s => { s.classList.remove('open'); s.querySelector('.cat-toggle').setAttribute('aria-expanded', 'false'); });
+  document.querySelectorAll('.cat-section').forEach(function(s){s.classList.remove('open');s.querySelector('.cat-toggle').setAttribute('aria-expanded','false');});
 }
 
-function openModal(id) {
-  currentTool = TOOLS.find(t => t.id === id);
-  if (!currentTool) return;
-  document.getElementById('modal-title').textContent = currentTool.icon + ' ' + currentTool.name;
-  document.getElementById('modal-subtitle').textContent = currentTool.desc;
-  document.getElementById('modal-output').style.display = 'none';
-  renderParams();
-  document.getElementById('run-modal').classList.add('open');
+function openModal(id){
+  currentTool=TOOLS.find(function(t){return t.id===id;});
+  if(!currentTool)return;
+  var isSkill=currentTool.badge==='skill';
+  var inner=document.getElementById('modal-inner');
+  inner.className='modal'+(isSkill?' is-skill':'');
+  document.getElementById('modal-icon').textContent=currentTool.icon;
+  document.getElementById('modal-title').textContent=currentTool.name;
+  var exDiv=document.getElementById('modal-explainer');
+  exDiv.textContent='';
+  if(isSkill&&currentTool.explainer){
+    var exBox=document.createElement('div');
+    exBox.className='skill-explainer';
+    exBox.innerHTML=currentTool.explainer; // safe: hardcoded string in TOOLS above
+    exDiv.appendChild(exBox);
+  }
+  buildModalBody();
+  var overlay=document.getElementById('run-modal');
+  overlay.classList.add('open');
+  overlay.onclick=function(e){if(e.target===overlay)closeRunModal();};
 }
 
-function renderParams() {
-  const c = document.getElementById('modal-params');
-  if (!currentTool.params.length) { c.innerHTML = '<p style="color:var(--text2);font-size:13px;">No parameters required. Click Generate Command to run.</p>'; return; }
-  c.innerHTML = currentTool.params.map(p => {
-    const req = p.req ? '<span style="color:var(--red)"> *</span>' : '';
-    let input = '';
-    if (p.type === 'textarea') input = `<textarea class="form-textarea" id="param_${p.name}" placeholder="${p.hint||''}"></textarea>`;
-    else if (p.type === 'select') input = `<select class="form-select" id="param_${p.name}"><option value="">-- Select --</option>${(p.options||[]).map(o=>`<option>${o}</option>`).join('')}</select>`;
-    else input = `<input type="${p.type||'text'}" class="form-input" id="param_${p.name}" placeholder="${p.hint||''}"/>`;
-    const hint = p.hint ? `<div class="form-hint">${p.hint}</div>` : '';
-    return `<div class="form-group"><label class="form-label">${p.label}${req}</label>${input}${hint}</div>`;
-  }).join('');
+function buildModalBody(){
+  var t=currentTool;
+  var isSkill=t.badge==='skill';
+  var body=document.getElementById('modal-body');
+  body.textContent='';
+
+  if(t.params&&t.params.length){
+    if(isSkill){
+      var lbl=document.createElement('span');lbl.className='form-section-label';lbl.textContent='Required';
+      body.appendChild(lbl);
+    }
+    t.params.forEach(function(p){body.appendChild(buildField(p,true));});
+  }
+
+  if(isSkill&&t.optionalParams&&t.optionalParams.length){
+    var lbl2=document.createElement('span');lbl2.className='form-section-label';lbl2.textContent="Optional — skip what you don't need";
+    body.appendChild(lbl2);
+    t.optionalParams.forEach(function(p){body.appendChild(buildField(p,false));});
+    t.optionalParams.filter(function(p){return p.type==='checkbox'&&p.defaultChecked;}).forEach(function(p){
+      var el=document.getElementById('param_'+p.name);
+      if(el)el.checked=true;
+    });
+  }
+
+  if((!t.params||!t.params.length)&&(!t.optionalParams||!t.optionalParams.length)){
+    var noP=document.createElement('p');noP.style.cssText='color:var(--text2);font-size:13px;';noP.textContent='No parameters needed. Click Generate Command to run.';
+    body.appendChild(noP);
+  }
+
+  if(isSkill&&t.attachNote){
+    var note=document.createElement('div');note.className='attach-note';
+    var noteIcon=document.createElement('span');noteIcon.className='attach-note-icon';noteIcon.textContent='📎';
+    var noteText=document.createElement('div');
+    var noteStrong=document.createElement('strong');noteStrong.textContent='Attaching images?';
+    noteText.appendChild(noteStrong);
+    noteText.appendChild(document.createTextNode(t.attachNote));
+    note.appendChild(noteIcon);note.appendChild(noteText);
+    body.appendChild(note);
+  }
+
+  var outBox=document.createElement('div');
+  outBox.id='modal-output';outBox.className='output-box';outBox.style.display='none';
+  var copyBtn=document.createElement('button');copyBtn.className='copy-btn';copyBtn.textContent='COPY';
+  copyBtn.onclick=copyOutput;
+  var outText=document.createElement('span');outText.id='output-text';
+  outBox.appendChild(copyBtn);outBox.appendChild(outText);
+  body.appendChild(outBox);
 }
 
-function generateCommand() {
-  const args = {};
-  (currentTool.params || []).forEach(p => { const el = document.getElementById('param_' + p.name); if (el && el.value.trim()) args[p.name] = el.value.trim(); });
-  const required = (currentTool.params || []).filter(p => p.req && !args[p.name]);
-  if (required.length) { required.forEach(p => { const el = document.getElementById('param_' + p.name); if (el) { el.style.borderColor = 'var(--red)'; setTimeout(()=>el.style.borderColor='',2000); } }); return; }
-  let cmd;
-  if (currentTool.badge === 'skill') { const argsStr = Object.entries(args).map(([k,v]) => `${k}="${v}"`).join(' '); cmd = `${currentTool.cmd}${argsStr ? ' ' + argsStr : ''}`; }
-  else { const argsStr = Object.entries(args).map(([k,v]) => `${k}="${v}"`).join(', '); cmd = `@pika ${currentTool.cmd}(${argsStr})`; }
-  document.getElementById('output-text').textContent = cmd;
-  document.getElementById('modal-output').style.display = 'block';
+function buildField(p){
+  var group=document.createElement('div');group.className='form-group';
+  if(p.type==='checkbox'){
+    var row=document.createElement('div');row.className='checkbox-row';
+    var chk=document.createElement('input');chk.type='checkbox';chk.id='param_'+p.name;
+    var lbl=document.createElement('label');lbl.htmlFor='param_'+p.name;lbl.textContent=p.label;
+    var hint=document.createElement('span');hint.className='chk-hint';hint.textContent=p.hint||'';
+    row.appendChild(chk);row.appendChild(lbl);row.appendChild(hint);
+    group.appendChild(row);
+    return group;
+  }
+  var lbl=document.createElement('label');lbl.className='form-label';lbl.htmlFor='param_'+p.name;
+  lbl.textContent=p.label;
+  if(p.req){var req=document.createElement('span');req.className='req';req.textContent=' *';lbl.appendChild(req);}
+  group.appendChild(lbl);
+  var input;
+  if(p.type==='textarea'){
+    input=document.createElement('textarea');input.className='form-textarea';
+    input.placeholder=p.hint||'';
+  } else if(p.type==='select'){
+    input=document.createElement('select');input.className='form-select';
+    var defOpt=document.createElement('option');defOpt.value='';defOpt.textContent='— optional —';
+    input.appendChild(defOpt);
+    (p.options||[]).forEach(function(o){var opt=document.createElement('option');opt.textContent=o;input.appendChild(opt);});
+  } else {
+    input=document.createElement('input');input.type=p.type||'text';input.className='form-input';
+    input.placeholder=p.hint||'';
+  }
+  input.id='param_'+p.name;
+  group.appendChild(input);
+  if(p.hint&&p.type!=='textarea'){
+    var hintEl=document.createElement('div');hintEl.className='form-hint';hintEl.textContent=p.hint;
+    group.appendChild(hintEl);
+  }
+  return group;
 }
 
-function closeRunModal() { document.getElementById('run-modal').classList.remove('open'); currentTool = null; }
-function closeModal(e) { if (e.target === document.getElementById('run-modal')) closeRunModal(); }
-function copyOutput() { navigator.clipboard.writeText(document.getElementById('output-text').textContent).then(() => showToast('Copied!')); }
+function generateCommand(){
+  var t=currentTool;
+  var allP=(t.params||[]).concat(t.optionalParams||[]);
+  var missing=(t.params||[]).filter(function(p){
+    if(!p.req)return false;
+    var el=document.getElementById('param_'+p.name);
+    return !el||!el.value.trim();
+  });
+  if(missing.length){
+    missing.forEach(function(p){
+      var el=document.getElementById('param_'+p.name);
+      if(el){el.style.borderColor='var(--red)';setTimeout(function(){el.style.borderColor='';},2000);}
+    });
+    return;
+  }
+  var args={};
+  allP.forEach(function(p){
+    var el=document.getElementById('param_'+p.name);
+    if(!el)return;
+    if(p.type==='checkbox'){args[p.name]=el.checked;}
+    else if(el.value.trim()){args[p.name]=el.value.trim();}
+  });
+  var cmd;
+  if(t.badge==='skill'&&t.cmdFn){
+    cmd=t.cmdFn(args);
+  } else {
+    var parts=[];
+    Object.keys(args).forEach(function(k){parts.push(k+'="'+args[k]+'"');});
+    cmd='@pika '+(t.cmd||t.id)+'('+parts.join(', ')+')';
+  }
+  var outEl=document.getElementById('modal-output');
+  var txtEl=document.getElementById('output-text');
+  txtEl.textContent=cmd;
+  outEl.style.display='block';
+}
 
-function openSearch() {
+function closeRunModal(){
+  document.getElementById('run-modal').classList.remove('open');
+  currentTool=null;
+}
+function copyOutput(){
+  var txt=document.getElementById('output-text').textContent;
+  navigator.clipboard.writeText(txt).then(function(){showToast('Copied!');});
+}
+
+// SEARCH
+function openSearch(){
   document.getElementById('search-overlay').classList.add('open');
-  document.getElementById('search-input').value = '';
-  renderSearchResults('');
-  setTimeout(() => document.getElementById('search-input').focus(), 50);
+  var inp=document.getElementById('search-input');
+  inp.value='';renderSearch('');
+  var overlay=document.getElementById('search-overlay');
+  overlay.onclick=function(e){if(e.target===overlay)closeSearch();};
+  setTimeout(function(){inp.focus();},40);
 }
-function closeSearchOut(e) { if (e.target === document.getElementById('search-overlay')) closeSearch(); }
-function closeSearch() { document.getElementById('search-overlay').classList.remove('open'); searchIdx = -1; }
-function doSearch(q) { searchIdx = -1; renderSearchResults(q); }
-
-function renderSearchResults(q) {
-  const r = document.getElementById('search-results');
-  const results = q.trim() ? TOOLS.filter(t => t.name.toLowerCase().includes(q.toLowerCase()) || t.desc.toLowerCase().includes(q.toLowerCase()) || t.cmd.toLowerCase().includes(q.toLowerCase())) : TOOLS.slice(0, 12);
-  if (!results.length) { r.innerHTML = '<div class="search-empty">No tools found</div>'; return; }
-  r.innerHTML = results.map(t => `<div class="search-result" data-id="${t.id}" onclick="searchSelect('${t.id}')"><div class="search-result-icon" style="background:var(--surface2)">${t.icon}</div><div class="search-result-info"><div class="search-result-name">${t.name}</div><div class="search-result-cat">${CAT_META[t.cat]?.title || t.cat} · ${t.cmd}</div></div></div>`).join('');
+function closeSearch(){document.getElementById('search-overlay').classList.remove('open');searchIdx=-1;}
+function renderSearch(q){
+  var r=document.getElementById('search-results');
+  r.textContent='';
+  var results=q.trim()
+    ?TOOLS.filter(function(t){var s=q.toLowerCase();return t.name.toLowerCase().includes(s)||t.desc.toLowerCase().includes(s)||(t.cmd||t.id).toLowerCase().includes(s);})
+    :TOOLS.slice(0,12);
+  if(!results.length){var empty=document.createElement('div');empty.className='search-empty';empty.textContent='No tools found';r.appendChild(empty);return;}
+  results.forEach(function(t){
+    var row=document.createElement('div');row.className='search-result';row.dataset.id=t.id;
+    var icon=document.createElement('div');icon.className='sr-icon';icon.textContent=t.icon;
+    var info=document.createElement('div');info.className='sr-info';
+    var name=document.createElement('div');name.className='sr-name';name.textContent=t.name;
+    var meta=document.createElement('div');meta.className='sr-meta';meta.textContent=(CAT_META[t.cat]?CAT_META[t.cat].title:t.cat)+' · '+(t.cmd||t.id);
+    info.appendChild(name);info.appendChild(meta);
+    row.appendChild(icon);row.appendChild(info);
+    row.onclick=function(){searchPick(t.id);};
+    r.appendChild(row);
+  });
 }
-
-function searchSelect(id) {
-  closeSearch(); showPage('dashboard');
-  const tool = TOOLS.find(t => t.id === id);
-  if (tool) { const sec = document.querySelector(`.cat-section[data-cat="${tool.cat}"]`); if (sec && !sec.classList.contains('open')) toggleSection(sec); }
-  setTimeout(() => openModal(id), 150);
-}
-
-function searchKeyNav(e) {
-  const items = document.querySelectorAll('.search-result');
-  if (e.key === 'ArrowDown') searchIdx = Math.min(searchIdx + 1, items.length - 1);
-  else if (e.key === 'ArrowUp') searchIdx = Math.max(searchIdx - 1, 0);
-  else if (e.key === 'Enter') { if (searchIdx >= 0 && items[searchIdx]) items[searchIdx].click(); return; }
-  else if (e.key === 'Escape') { closeSearch(); return; }
-  items.forEach((el, i) => el.classList.toggle('highlighted', i === searchIdx));
-}
-
-function showPage(page) {
-  document.getElementById('page-dashboard').style.display = page === 'dashboard' ? 'block' : 'none';
-  document.getElementById('page-docs').classList.toggle('active', page === 'docs');
-  document.querySelectorAll('.nav-tab').forEach((el, i) => el.classList.toggle('active', (i === 0 && page === 'dashboard') || (i === 1 && page === 'docs')));
-  if (page === 'docs') renderRefTable();
+function searchPick(id){
+  closeSearch();showPage('dashboard');
+  var tool=TOOLS.find(function(t){return t.id===id;});
+  if(tool){var sec=document.querySelector('.cat-section[data-cat="'+tool.cat+'"]');if(sec&&!sec.classList.contains('open'))toggleSec(sec);}
+  setTimeout(function(){openModal(id);},120);
 }
 
-function renderRefTable() {
-  const tbody = document.getElementById('ref-tbody');
-  if (tbody.innerHTML) return;
-  tbody.innerHTML = TOOLS.map(t => `<tr><td>${t.cmd}</td><td>${t.desc}</td><td>${CAT_META[t.cat]?.title||t.cat}</td></tr>`).join('');
-}
+document.getElementById('search-input').addEventListener('input',function(){searchIdx=-1;renderSearch(this.value);});
+document.getElementById('search-input').addEventListener('keydown',function(e){
+  var items=document.querySelectorAll('.search-result');
+  if(e.key==='ArrowDown'){searchIdx=Math.min(searchIdx+1,items.length-1);}
+  else if(e.key==='ArrowUp'){searchIdx=Math.max(searchIdx-1,0);}
+  else if(e.key==='Enter'){if(searchIdx>=0&&items[searchIdx])items[searchIdx].click();return;}
+  else if(e.key==='Escape'){closeSearch();return;}
+  items.forEach(function(el,i){el.classList.toggle('hl',i===searchIdx);});
+});
 
-function toggleTheme() {
-  const root = document.documentElement;
-  const isDark = root.getAttribute('data-theme') === 'dark';
-  root.setAttribute('data-theme', isDark ? 'light' : 'dark');
-  document.querySelector('.theme-toggle').textContent = isDark ? '🌙' : '☀️';
+function showPage(page){
+  document.getElementById('page-dashboard').className=page==='dashboard'?'page active':'page';
+  document.getElementById('page-docs').className=page==='docs'?'page active':'page';
+  document.querySelectorAll('.nav-tab').forEach(function(el,i){
+    el.classList.toggle('active',(i===0&&page==='dashboard')||(i===1&&page==='docs'));
+  });
+  if(page==='docs')renderRefTable();
 }
-
-function showToast(msg) {
-  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000);
+function renderRefTable(){
+  var tbody=document.getElementById('ref-tbody');
+  if(tbody.children.length)return;
+  TOOLS.forEach(function(t){
+    var tr=document.createElement('tr');
+    var td1=document.createElement('td');td1.textContent=t.cmd||t.id;
+    var td2=document.createElement('td');td2.textContent=t.desc;
+    var td3=document.createElement('td');td3.textContent=CAT_META[t.cat]?CAT_META[t.cat].title:t.cat;
+    tr.appendChild(td1);tr.appendChild(td2);tr.appendChild(td3);
+    tbody.appendChild(tr);
+  });
 }
-
-document.addEventListener('keydown', e => {
-  if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
-  if (e.key === 'Escape') { closeRunModal(); closeSearch(); }
+function toggleTheme(){
+  var root=document.documentElement;
+  var dark=root.getAttribute('data-theme')==='dark';
+  root.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('theme-btn').textContent=dark?'☀️':'🌙';
+}
+function showToast(msg){
+  var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},2000);
+}
+document.addEventListener('keydown',function(e){
+  if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();openSearch();}
+  if(e.key==='Escape'){closeRunModal();closeSearch();}
 });
 
 renderGrid();
