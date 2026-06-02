@@ -426,10 +426,10 @@
   <div class="hero">
     <div class="hero-eyebrow">Pika-Labs · Claude Code · MCP</div>
     <h1 class="hero-heading">The MCP Tools<br><em>Dashboard</em></h1>
-    <p class="hero-sub">Browse all 42 Pika MCP tools and skills. Click any card to build the exact command — then paste it into Claude Code.</p>
+    <p class="hero-sub">Browse all 42 Pika MCP tools and 9 skills. Click any card to build the exact command — then paste it into Claude Code.</p>
     <div class="hero-stats">
       <div class="stat"><span class="stat-num">42</span><span class="stat-label">Tools</span></div>
-      <div class="stat"><span class="stat-num">3</span><span class="stat-label">Skills</span></div>
+      <div class="stat"><span class="stat-num">9</span><span class="stat-label">Skills</span></div>
       <div class="stat"><span class="stat-num">6</span><span class="stat-label">Categories</span></div>
       <div class="stat"><span class="stat-num">Live</span><span class="stat-label">Pika-Labs</span></div>
     </div>
@@ -618,7 +618,7 @@
 const TOOLS = [
   // SKILLS
   {
-    id:'skill_podcast', name:'Podcast Skill', cat:'skills', badge:'skill', icon:'🎙️', cmd:'/pika:podcast',
+    id:'skill_podcast', name:'Podcast', cat:'skills', badge:'skill', icon:'🎙️', cmd:'/pika:podcast',
     desc:'Two-host AI podcast video from any topic or URL. Fully autonomous.',
     explainer:'<strong>Just give Pika a topic or URL.</strong> It writes the script, generates two AI hosts, voices them with realistic speech, and edits a full ~1 minute two-host conversation video with 4 acts (~15 sec each). You only need to provide the subject.',
     params:[{name:'input',label:'Topic or URL',type:'textarea',req:true,hint:'Topic, brief, or HTTPS URL — what should the podcast be about?'}],
@@ -636,7 +636,7 @@ const TOOLS = [
     }
   },
   {
-    id:'skill_explainer', name:'Explainer Skill', cat:'skills', badge:'skill', icon:'🎬', cmd:'/pika:explainer',
+    id:'skill_explainer', name:'Explainer', cat:'skills', badge:'skill', icon:'🎬', cmd:'/pika:explainer',
     desc:'65–80 sec explainer video with avatar lipsync from any URL.',
     explainer:'<strong>Give Pika a URL — GitHub repo, product page, docs, or launch page.</strong> It captures the live site, writes a narration script, animates an avatar presenter with lipsync, adds macOS browser chrome and zoom effects, and renders a 65–80 second polished explainer video. You just need the URL.',
     params:[{name:'url',label:'Page URL',type:'text',req:true,hint:'HTTPS URL of the page to explain (GitHub repo, product page, docs…)'}],
@@ -663,7 +663,7 @@ const TOOLS = [
     }
   },
   {
-    id:'skill_ugc', name:'UGC Ads Skill', cat:'skills', badge:'skill', icon:'📱', cmd:'/pika:ugc-ads',
+    id:'skill_ugc', name:'UGC Ads', cat:'skills', badge:'skill', icon:'📱', cmd:'/pika:ugc-ads',
     desc:'15-sec vertical UGC-style ad from a product URL. 6–12 min runtime.',
     explainer:'<strong>Give Pika a product URL.</strong> It auto-detects the product category (HAUL, APP, FOOD, BEAUTY, FITNESS, TECH), builds a 5-act creator narrative (set → name → reveal → twist → punchline), and renders a 15-second 9:16 vertical ad that feels like authentic creator content. Runtime: 6–12 minutes end-to-end.',
     params:[{name:'url',label:'Product URL',type:'text',req:true,hint:'Product page URL — drives category detection and narrative logic'}],
@@ -683,6 +683,119 @@ const TOOLS = [
       if(a.provider)parts.push('provider="'+a.provider+'"');
       if(a.captions===false)parts.push('captions="false"');
       return '/pika:ugc-ads '+parts.join(' ');
+    }
+  },
+  {
+    id:'skill_baseball_trend', name:'Baseball Trend', cat:'skills', badge:'skill', icon:'⚾', cmd:'/pika:baseball-trend',
+    desc:'Viral fake ESPN behind-home-plate broadcast cutaway with your name on the chyron.',
+    explainer:'<strong>Give Pika your name and a reference photo.</strong> It generates a broadcast-style still with a real-looking scorebug + chyron baked in (gpt-image-2), then locks that as the first frame of a 15s Kling v3-omni clip with native two-announcer commentary that names you on air. Fixed trend: Yankees vs Red Sox ALCS Game 3 at Fenway Park.',
+    params:[
+      {name:'username',label:'Your Name',type:'text',req:true,hint:'Name that will appear in the on-air chyron'},
+      {name:'photo',label:'Reference Photo URL',type:'text',req:true,hint:'Your photo — any style (photoreal, illustrated, 3D)'}
+    ],
+    optionalParams:[],
+    attachNote:'Reference photo can be a hosted URL or drag the file into your Claude Code terminal after running the command.',
+    cmdFn:function(a){
+      return ('/pika:baseball-trend '+(a.username||'')+' '+(a.photo||'')).trim();
+    }
+  },
+  {
+    id:'skill_kiss_cam', name:'Kiss Cam', cat:'skills', badge:'skill', icon:'💋', cmd:'/pika:kiss-cam',
+    desc:'Viral fake in-arena Jumbotron Kiss Cam moment for any two subjects.',
+    explainer:'<strong>Give Pika two reference photos.</strong> It generates a fan-filmed phone shot of the MSG Jumbotron with retro Kiss Cam graphic + scoreboard (gpt-image-2), then locks that as the first frame of a 15s Kling v3-omni clip with PA-announcer commentary and crowd reaction. Works with any subject style — photoreal, 3D toy, illustrated avatar.',
+    params:[
+      {name:'subject_a',label:'Subject A Photo URL',type:'text',req:true,hint:'First person — any visual style'},
+      {name:'subject_b',label:'Subject B Photo URL',type:'text',req:true,hint:'Second person — any visual style'}
+    ],
+    optionalParams:[],
+    attachNote:'Photo URLs or drag files into your Claude Code terminal after running the command.',
+    cmdFn:function(a){
+      return ('/pika:kiss-cam '+(a.subject_a||'')+' '+(a.subject_b||'')).trim();
+    }
+  },
+  {
+    id:'skill_app_sizzle', name:'App Sizzle', cat:'skills', badge:'skill', icon:'✨', cmd:'/pika:app-sizzle',
+    desc:'Cinematic 1080p iOS app teaser video from real App Store screenshots.',
+    explainer:'<strong>Give Pika your app name or URL.</strong> It fetches real App Store screenshots, runs a GPT-image-2 enhancement pass on each selected screen, then generates a beat-driven cinematic teaser ending with your brand logo + a deterministic COMING SOON overlay. Screens can come from the App Store, a live website, user-supplied files, or URLs.',
+    params:[
+      {name:'app',label:'App Name or URL',type:'text',req:true,hint:'App Store URL, website URL, or app name'}
+    ],
+    optionalParams:[
+      {name:'logo',label:'Logo URL or Path',type:'text',hint:'Brand logo for end card — fetched from App Store if omitted'},
+      {name:'aspect',label:'Aspect Ratio',type:'select',options:['16:9','9:16','1:1'],hint:'Default: 16:9'}
+    ],
+    attachNote:'Have custom screens? Drag image files into your Claude Code terminal after running the command.',
+    cmdFn:function(a){
+      var parts=[a.app||''];
+      if(a.logo)parts.push('logo="'+a.logo+'"');
+      if(a.aspect)parts.push('aspect='+a.aspect);
+      return ('/pika:app-sizzle '+parts.join(' ')).trim();
+    }
+  },
+  {
+    id:'skill_app_store_screens', name:'App Store Screens', cat:'skills', badge:'skill', icon:'📲', cmd:'/pika:app-store-screens',
+    desc:'5–6 story-driven App Store screenshots, 1290×2796, ready for App Store Connect.',
+    explainer:'<strong>Give Pika a brand.md, product screenshots, or an App Store URL.</strong> It produces a story-driven screenshot set (hook → value → features → proof → close), splashy and on-brand — 1290×2796 PNGs ready to drop into App Store Connect.',
+    params:[
+      {name:'brand',label:'Brand Spec or App Store URL',type:'text',req:true,hint:'brand.md path, brand description, or App Store listing URL'}
+    ],
+    optionalParams:[
+      {name:'screens',label:'Product Screenshots',type:'text',hint:'Paths or URLs to raw app screenshots'},
+      {name:'count',label:'Screenshot Count',type:'select',options:['5','6'],hint:'Default: 5'},
+      {name:'quick',label:'Quick mode',type:'checkbox',hint:'Faster output, fewer refinement passes'}
+    ],
+    attachNote:'Have screenshots or a brand kit? Drag files into your Claude Code terminal after running the command.',
+    cmdFn:function(a){
+      var parts=[a.brand||''];
+      if(a.screens)parts.push('product-screenshots="'+a.screens+'"');
+      if(a.count)parts.push('count='+a.count);
+      if(a.quick)parts.push('--quick');
+      return ('/pika:app-store-screens '+parts.join(' ')).trim();
+    }
+  },
+  {
+    id:'skill_build_a_brand', name:'Build a Brand', cat:'skills', badge:'skill', icon:'🎨', cmd:'/pika:build-a-brand',
+    desc:'Complete brand identity + guidelines PDF from any idea, URL, or reference brands.',
+    explainer:'<strong>Give Pika an idea, existing website, reference brands, or product photos.</strong> It builds a complete brand identity — logo, color palette, typography, voice — and exports a polished brand guidelines PDF. Use this when you need a brand identity but NOT a full commerce launch.',
+    params:[
+      {name:'input',label:'Idea, URL, or Reference Brands',type:'textarea',req:true,hint:'e.g. "a streetwear brand for skaters" or a URL or "feels like Supreme + Patagonia"'}
+    ],
+    optionalParams:[
+      {name:'photos',label:'Product Photos (URLs or paths)',type:'text',hint:'Reference images to inform the brand aesthetic'},
+      {name:'refresh',label:'Existing Brand to Refresh',type:'text',hint:'URL or name of brand you want to rebrand'},
+      {name:'quick',label:'Quick mode',type:'checkbox',hint:'Faster output, fewer refinement passes'}
+    ],
+    attachNote:'Have photos or existing brand assets? Drag files into your Claude Code terminal after running the command.',
+    cmdFn:function(a){
+      var parts=['"'+(a.input||'')+'"'];
+      if(a.photos)parts.push('photos="'+a.photos+'"');
+      if(a.refresh)parts.push('refresh="'+a.refresh+'"');
+      if(a.quick)parts.push('--quick');
+      return ('/pika:build-a-brand '+parts.join(' ')).trim();
+    }
+  },
+  {
+    id:'skill_founder_product_video', name:'Founder Product Video', cat:'skills', badge:'skill', icon:'🚀', cmd:'/pika:founder-product-video',
+    desc:'65-sec founder-style talking-head product video with real UI on-screen.',
+    explainer:'<strong>Give Pika a product URL + founder photo.</strong> It generates a 16:9 1080p MP4 — 4 × 15s SeeDance acts of a talking founder with your real product screenshots on-screen, plus a 5s branded end card and background music. Requires a brand kit (run build-a-brand first if you don\'t have one).',
+    params:[
+      {name:'url',label:'Product URL',type:'text',req:true,hint:'Your product or landing page URL'},
+      {name:'founder',label:'Founder Name & Role',type:'text',req:true,hint:'e.g. "Jane Doe, CEO"'}
+    ],
+    optionalParams:[
+      {name:'photo',label:'Founder Photo URL or Path',type:'text',hint:'Talking-head image — auto-generated if omitted'},
+      {name:'brand_kit',label:'Brand Kit Path',type:'text',hint:'Path to brand.json or build-a-brand output folder'},
+      {name:'aspect',label:'Aspect Ratio',type:'select',options:['16:9','9:16','1:1'],hint:'Default: 16:9'},
+      {name:'quick',label:'Quick mode',type:'checkbox',hint:'Faster output, fewer refinement passes'}
+    ],
+    attachNote:'Have a founder photo or brand kit? Drag files into your Claude Code terminal after running the command.',
+    cmdFn:function(a){
+      var parts=[a.url||'','--founder "'+(a.founder||'')+'"'];
+      if(a.photo)parts.push('--photo '+a.photo);
+      if(a.brand_kit)parts.push('brand-kit="'+a.brand_kit+'"');
+      if(a.aspect)parts.push('aspect='+a.aspect);
+      if(a.quick)parts.push('--quick');
+      return ('/pika:founder-product-video '+parts.join(' ')).trim();
     }
   },
   // GENERATE VIDEO

@@ -1,6 +1,6 @@
 # Pika MCP Dashboard
 
-A community-built reference dashboard for [Pika's MCP](https://pika.me/mcp) — browse all 42 tools, run the 3 skills, and copy the exact Claude Code command to execute them.
+A community-built reference dashboard for [Pika's MCP](https://pika.me/mcp) — browse all 42 tools, run the 9 skills, and copy the exact Claude Code command to execute them.
 
 🔗 **Live:** [tatinc23.github.io/pika-mcp-dashboard](https://tatinc23.github.io/pika-mcp-dashboard)
 
@@ -13,7 +13,7 @@ A community-built reference dashboard for [Pika's MCP](https://pika.me/mcp) — 
 ## What it does
 
 - **42 MCP tools** organized by category — Generate Video, Image & Music, Edit & Effects, Voice & Audio, Identity, Utilities
-- **3 skill builders** — Podcast, Explainer, UGC Ads — fill in a topic or URL and get the exact `/pika:skill` command
+- **9 skill builders** — Podcast, Explainer, UGC Ads, Baseball Trend, Kiss Cam, App Sizzle, App Store Screens, Build a Brand, Founder Product Video — fill in inputs and get the exact `/pika:skill` command
 - **Docs & Setup tab** — step-by-step install for both Claude app and terminal, MCP URL + Skills plugin
 - Search (⌘K), category filter, dark/light mode
 
